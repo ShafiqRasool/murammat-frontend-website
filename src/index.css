@@ -1,0 +1,27 @@
+@import "tailwindcss";
+/* Define your custom theme variables here */
+@theme {
+  /* You can still define brand colors if you want to use them as bg-brand-green */
+  --color-brand-green: #00674F;
+  --color-brand-grey: #878787;
+
+  /* Custom Animations we used in the Hero Component */
+  --animate-fade-in: fadeIn 0.3s ease-out;
+  --animate-slide-up: slideUp 0.4s ease-out;
+
+  /* Keyframes for the animations */
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  
+  @keyframes slideUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* Any custom base CSS goes below */
+body {
+  background-color: #ffffff;
+}
