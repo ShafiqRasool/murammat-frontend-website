@@ -16,7 +16,6 @@ const Navbar = () => {
   // Your specific Nav Links
   const navLinks = [
     { name: 'Home', href: '/' },
-    { name: 'How it works', href: '/how-it-works' },
     { name: 'Why Murammat', href: '/why-murammat' },
     { name: 'Track my order', href: '/track-order' },
     { name: 'Blog', href: '/blog' },

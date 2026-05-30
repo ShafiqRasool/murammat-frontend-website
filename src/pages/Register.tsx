@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import API from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -18,7 +19,7 @@ export default function Register() {
   // Step 1 State
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState('+92');
   const [role, setRole] = useState('customer');
 
   // Step 2 State (Customer)
@@ -38,6 +39,11 @@ export default function Register() {
 
   const handleStep1 = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (phone.length !== 13 || !phone.startsWith('+923')) {
+      setError('Please enter a valid Pakistani phone number (e.g., +923001234567)');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -46,7 +52,7 @@ export default function Register() {
       await API.post('/users/create', { email, password, phone, role });
       
       // 2. Login to get token for profile creation
-      const res = await API.post('/auth/login', { email, password });
+      const res = await API.post('/auth/login', { phone, password });
       
       dispatch(loginSuccess({
         user: { id: res.data.user.id, email: res.data.user.email, role: res.data.user.roles[0] || role },
@@ -60,6 +66,28 @@ export default function Register() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleLoginSuccess = async (credentialResponse: any) => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await API.post('/auth/google-login', { credential: credentialResponse.credential });
+      dispatch(loginSuccess({
+        user: { id: res.data.user.id, email: res.data.user.email, phone: res.data.user.phone, role: res.data.user.roles[0] || 'customer' },
+        token: res.data.token
+      }));
+      // Google user is logged in immediately, they can edit profile later via dashboard
+      navigate('/');
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Google login failed.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLoginError = () => {
+    setError('Google Registration Failed');
   };
 
   const handleStep2 = async (e: React.FormEvent) => {
@@ -113,7 +141,21 @@ export default function Register() {
     setServiceIds(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]);
   };
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value;
+    if (!val.startsWith('+92')) {
+      val = '+92';
+    }
+    const numbersOnly = val.slice(3).replace(/\D/g, '');
+    val = '+92' + numbersOnly;
+
+    if (val.length <= 13) {
+      setPhone(val);
+    }
+  };
+
   return (
+    <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
     <div className="flex items-center justify-center min-h-[85vh] bg-gray-50 py-10">
       <Card className="w-full max-w-lg p-8">
         <div className="text-center mb-8">
@@ -133,9 +175,9 @@ export default function Register() {
 
         {step === 1 ? (
           <form onSubmit={handleStep1} className="flex flex-col gap-4 animate-fade-in">
-            <Input label="Email Address" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input label="Phone Number" type="tel" required value={phone} onChange={handlePhoneChange} placeholder="+923001234567" />
+            <Input label="Email Address (Optional)" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             <Input label="Password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-            <Input label="Phone Number" type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} />
             
             <div className="flex flex-col gap-1 mb-2">
               <label className="text-sm font-semibold text-[#878787]">I am a...</label>
@@ -217,13 +259,28 @@ export default function Register() {
         )}
 
         {step === 1 && (
-          <div className="mt-6 text-center">
-            <p className="text-sm text-[#878787]">
-              Already have an account? <span className="text-[#00674F] font-semibold cursor-pointer hover:underline" onClick={() => navigate('/login')}>Sign in</span>
-            </p>
+          <div className="mt-6 flex flex-col items-center justify-center gap-4">
+            <div className="flex items-center gap-2 w-full">
+              <div className="flex-1 h-px bg-gray-200"></div>
+              <span className="text-gray-400 text-sm">OR</span>
+              <div className="flex-1 h-px bg-gray-200"></div>
+            </div>
+            
+            <GoogleLogin
+              onSuccess={handleGoogleLoginSuccess}
+              onError={handleGoogleLoginError}
+              useOneTap
+            />
+
+            <div className="mt-2 text-center">
+              <p className="text-sm text-[#878787]">
+                Already have an account? <span className="text-[#00674F] font-semibold cursor-pointer hover:underline" onClick={() => navigate('/login')}>Sign in</span>
+              </p>
+            </div>
           </div>
         )}
       </Card>
     </div>
+    </GoogleOAuthProvider>
   );
 }

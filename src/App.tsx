@@ -11,6 +11,10 @@ import Footer from './Components/LandingPage/Footer';
 import SpecificCategories from './pages/SpecificCategories';
 import ServicesPage from './pages/Services';
 import EditProfile from './pages/EditProfile';
+import WhyMurammat from './pages/WhyMurammat';
+import Blogs from './pages/Blogs';
+import BlogDetails from './pages/BlogDetails';
+import TrackOrder from './pages/TrackOrder';
 
 function App() {
   return (
@@ -28,6 +32,10 @@ function App() {
           <Route path="/checkout/:service_id" element={<Checkout />} />
           <Route path="/specific-categories" element={<SpecificCategories />} />
           <Route path="/subcategory/:subcategoryId/services" element={<ServicesPage />} />
+          <Route path="/why-murammat" element={<WhyMurammat />} />
+          <Route path="/blog" element={<Blogs />} />
+          <Route path="/blog/:id" element={<BlogDetails />} />
+          <Route path="/track-order" element={<TrackOrder />} />
         </Routes>
       </div>
       <Footer />

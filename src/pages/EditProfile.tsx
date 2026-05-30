@@ -30,6 +30,8 @@ export default function EditProfile() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [serviceIds, setServiceIds] = useState<string[]>([]);
+  const [isOnline, setIsOnline] = useState(false);
+  const [statusLoading, setStatusLoading] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated || !user) {
@@ -57,6 +59,13 @@ export default function EditProfile() {
           setPhone(data.phone || '');
           setEmail(data.email || '');
           setServiceIds(data.service_ids || []);
+
+          try {
+            const statusRes = await API.get('/providers/online-status');
+            setIsOnline(statusRes.data.is_online);
+          } catch(err) {
+            console.error('Failed to get online status', err);
+          }
         }
       } catch (err: any) {
         console.error(err);
@@ -71,6 +80,21 @@ export default function EditProfile() {
 
   const handleServiceToggle = (id: string) => {
     setServiceIds(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]);
+  };
+
+  const handleToggleOnline = async () => {
+    setStatusLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+      const res = await API.patch('/providers/online-status', { is_online: !isOnline });
+      setIsOnline(res.data.is_online);
+      setSuccess(res.data.message || `Status updated to ${res.data.is_online ? 'online' : 'offline'}`);
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to update online status.');
+    } finally {
+      setStatusLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -128,6 +152,24 @@ export default function EditProfile() {
         {success && (
           <div className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-md mb-6 shadow-sm">
             {success}
+          </div>
+        )}
+
+        {user?.role === 'provider' && (
+          <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-gray-200 mb-6 shadow-sm">
+            <div>
+              <h3 className="text-gray-800 font-semibold text-lg">Availability Status</h3>
+              <p className="text-sm text-gray-500">Toggle to show if you are available for work today. Auto resets to offline at midnight.</p>
+            </div>
+            <Button 
+              type="button" 
+              onClick={handleToggleOnline} 
+              isLoading={statusLoading}
+              className={`px-6 rounded-full transition-colors font-semibold ${isOnline ? 'bg-green-500 hover:bg-green-600 text-white shadow-green-200' : 'bg-gray-500 hover:bg-gray-600 text-white shadow-gray-200'}`}
+              style={{ backgroundColor: isOnline ? '#22c55e' : '#6b7280', color: 'white' }}
+            >
+              {isOnline ? '🟢 Online' : '⚫ Offline'}
+            </Button>
           </div>
         )}
 

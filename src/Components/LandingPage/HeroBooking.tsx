@@ -66,13 +66,21 @@ const HeroBooking: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleRequestCall = (e: React.FormEvent) => {
+  const handleRequestCall = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.phone.length !== 11) {
       setPhoneError('Enter exactly 11 digits (e.g., 03218180319)');
       return;
     }
-    setShowLocationPopup(true);
+    
+    try {
+      await API.post('/public/call-requests', formData);
+      setShowLocationPopup(true);
+    } catch (error) {
+      console.error('Error submitting call request:', error);
+      // Fallback in case of error
+      setShowLocationPopup(true);
+    }
   };
 
   const handleAllowLocation = () => {

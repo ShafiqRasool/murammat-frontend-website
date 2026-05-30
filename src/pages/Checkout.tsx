@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
+import { loginSuccess } from '../store/authSlice';
 import API from '../utils/api';
 import toast, { Toaster } from 'react-hot-toast';
 import { Edit2, Minus, Plus, ImagePlus, X, MapPin } from 'lucide-react';
@@ -9,6 +10,7 @@ import { Edit2, Minus, Plus, ImagePlus, X, MapPin } from 'lucide-react';
 export default function Checkout() {
   const { service_id } = useParams<{ service_id: string }>();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { token, user } = useSelector((state: RootState) => state.auth);
 
   const [loading, setLoading] = useState(true);
@@ -43,11 +45,6 @@ export default function Checkout() {
   const [savedAddress, setSavedAddress] = useState<{cityId: string, areaId: string, line: string, displayArea: string} | null>(null);
 
   useEffect(() => {
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
     const initData = async () => {
       try {
         setLoading(true);
@@ -160,6 +157,13 @@ export default function Checkout() {
 
     setSubmitting(true);
     try {
+      if (!token) {
+        // Guest Checkout: Sign up/login by phone
+        const guestRes = await API.post('/auth/guest-checkout', { phone });
+        dispatch(loginSuccess(guestRes.data));
+        // The API interceptor will automatically use the new token from localStorage
+      }
+
       let imageUrl = null;
       if (problemImage) {
         const formData = new FormData();
@@ -199,14 +203,20 @@ export default function Checkout() {
         ]
       };
 
-      await API.post('/bookings', payload);
-      toast.success('Booking confirmed, thank you! After some times Murammat support team will contact you.', {
-        duration: 5000,
-        style: { background: '#00674F', color: '#fff' }
-      });
+      const res = await API.post('/bookings', payload);
+      toast.success(
+        <div>
+          <p className="font-bold mb-1">Booking confirmed!</p>
+          <p className="text-sm">Your Tracking ID is <strong>{res.data.booking_id}</strong>. You can view it in your dashboard.</p>
+        </div>, 
+        {
+          duration: 6000,
+          style: { background: '#00674F', color: '#fff' }
+        }
+      );
       setTimeout(() => {
         navigate('/dashboard');
-      }, 3000);
+      }, 4000);
 
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Failed to place order');

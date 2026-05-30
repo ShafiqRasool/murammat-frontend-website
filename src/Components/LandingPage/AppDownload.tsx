@@ -1,134 +1,318 @@
-import React, { useState, useEffect } from 'react';
-import { CheckCircle2 } from 'lucide-react';
-import mobileAppImg from '../../assets/LandingPage/murammat-mobile-web.png';
+import React, { useEffect, useRef, useState } from 'react';
 
 const AppDownload: React.FC = () => {
-  // State to trigger the animation after 4 seconds
-  const [isAnimated, setIsAnimated] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [dots, setDots] = useState('');
+  const sectionRef = useRef<HTMLDivElement>(null);
 
+  // Intersection observer for entrance animation
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsAnimated(true);
-    }, 1000); // Trigger sooner for better UX
-
-    return () => clearTimeout(timer);
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.2 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
   }, []);
 
-  return (
-    <section className="w-full bg-gradient-to-br from-[#00674F] via-[#005c46] to-[#004232] py-16 lg:py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden antialiased">
-      
-      {/* Decorative background glow */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
+  // Animated ellipsis
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots(prev => (prev.length >= 3 ? '' : prev + '.'));
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
 
-      <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20 relative z-10">
-        
-        {/* LEFT COLUMN: Text & Actions */}
-        <div className="w-full lg:w-1/2 text-white flex flex-col items-center lg:items-start text-center lg:text-left">
-          
-          {/* Enhanced Typography */}
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-6 leading-[1.1] drop-shadow-sm">
-            Book home services <br />
-            <span className="text-[#A7D1C6]">on the go.</span>
-          </h2>
-          
-          <p className="text-base md:text-lg text-[#E0EFEA] mb-8 leading-relaxed max-w-lg font-medium opacity-90">
-            Access the Murammat.pk platform directly from your phone. Track bookings in real-time, get exclusive discounts, and connect with our verified experts.
+  const features = [
+    { icon: '⚡', label: 'Instant Booking' },
+    { icon: '📍', label: 'Live Tracking' },
+    { icon: '🔔', label: 'Real-time Alerts' },
+    { icon: '⭐', label: 'Verified Experts' },
+  ];
+
+  return (
+    <section
+      ref={sectionRef}
+      style={{
+        width: '100%',
+        background: 'linear-gradient(135deg, #00674F 0%, #005240 40%, #003d30 100%)',
+        padding: '80px 24px',
+        position: 'relative',
+        overflow: 'hidden',
+        fontFamily: "'Inter', 'Segoe UI', sans-serif",
+      }}
+    >
+      {/* ── Decorative background blobs ── */}
+      <div style={{
+        position: 'absolute', top: '-80px', right: '-80px',
+        width: '400px', height: '400px',
+        background: 'radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%)',
+        borderRadius: '50%', pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '-60px', left: '-60px',
+        width: '350px', height: '350px',
+        background: 'radial-gradient(circle, rgba(167,209,198,0.08) 0%, transparent 70%)',
+        borderRadius: '50%', pointerEvents: 'none',
+      }} />
+      {/* Floating rings */}
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '700px', height: '700px',
+        border: '1px solid rgba(255,255,255,0.04)',
+        borderRadius: '50%', pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '500px', height: '500px',
+        border: '1px solid rgba(255,255,255,0.06)',
+        borderRadius: '50%', pointerEvents: 'none',
+      }} />
+
+      {/* ── Main content ── */}
+      <div style={{
+        maxWidth: '860px', margin: '0 auto',
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        textAlign: 'center', position: 'relative', zIndex: 2,
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(40px)',
+        transition: 'opacity 0.7s ease, transform 0.7s ease',
+      }}>
+
+        {/* ── Badge ── */}
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: '8px',
+          background: 'rgba(255,255,255,0.1)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '100px',
+          padding: '8px 20px',
+          marginBottom: '32px',
+          backdropFilter: 'blur(10px)',
+        }}>
+          <span style={{ fontSize: '16px' }}>📱</span>
+          <span style={{
+            color: '#A7D1C6', fontSize: '13px', fontWeight: 700,
+            letterSpacing: '2px', textTransform: 'uppercase',
+          }}>
+            Mobile App
+          </span>
+        </div>
+
+        {/* ── Headline ── */}
+        <h2 style={{
+          color: '#ffffff',
+          fontSize: 'clamp(36px, 6vw, 64px)',
+          fontWeight: 900,
+          lineHeight: 1.1,
+          margin: '0 0 16px',
+          letterSpacing: '-1px',
+        }}>
+          Something Big Is
+        </h2>
+        <h2 style={{
+          background: 'linear-gradient(90deg, #A7D1C6 0%, #ffffff 50%, #A7D1C6 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          fontSize: 'clamp(36px, 6vw, 64px)',
+          fontWeight: 900,
+          lineHeight: 1.1,
+          margin: '0 0 32px',
+          letterSpacing: '-1px',
+        }}>
+          Coming Soon{dots}
+        </h2>
+
+        {/* ── Subtitle ── */}
+        <p style={{
+          color: 'rgba(255,255,255,0.75)',
+          fontSize: '18px',
+          lineHeight: 1.7,
+          maxWidth: '560px',
+          margin: '0 0 52px',
+          fontWeight: 400,
+        }}>
+          The Murammat.pk mobile app is on its way — bringing faster bookings,
+          live tracking, and exclusive deals straight to your pocket.
+        </p>
+
+        {/* ── Feature pills ── */}
+        <div style={{
+          display: 'flex', flexWrap: 'wrap', gap: '12px',
+          justifyContent: 'center', marginBottom: '56px',
+        }}>
+          {features.map((f, i) => (
+            <div
+              key={f.label}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '10px',
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                borderRadius: '100px',
+                padding: '12px 22px',
+                backdropFilter: 'blur(8px)',
+                opacity: visible ? 1 : 0,
+                transform: visible ? 'translateY(0)' : 'translateY(20px)',
+                transition: `opacity 0.5s ease ${0.2 + i * 0.1}s, transform 0.5s ease ${0.2 + i * 0.1}s`,
+              }}
+            >
+              <span style={{ fontSize: '18px' }}>{f.icon}</span>
+              <span style={{ color: '#E0EFEA', fontSize: '14px', fontWeight: 600 }}>{f.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Notify me card ── */}
+        <div style={{
+          background: 'rgba(255,255,255,0.07)',
+          border: '1px solid rgba(255,255,255,0.15)',
+          borderRadius: '24px',
+          padding: '36px 40px',
+          backdropFilter: 'blur(16px)',
+          width: '100%',
+          maxWidth: '520px',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
+          opacity: visible ? 1 : 0,
+          transform: visible ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.97)',
+          transition: 'opacity 0.7s ease 0.4s, transform 0.7s ease 0.4s',
+        }}>
+          <p style={{
+            color: '#A7D1C6', fontSize: '12px', fontWeight: 700,
+            letterSpacing: '2px', textTransform: 'uppercase',
+            margin: '0 0 8px',
+          }}>
+            Be the First to Know
+          </p>
+          <p style={{
+            color: 'rgba(255,255,255,0.85)', fontSize: '15px',
+            margin: '0 0 24px', lineHeight: 1.5,
+          }}>
+            Drop your email and we'll notify you the moment we launch on iOS & Android.
           </p>
 
-          {/* Clean Features List */}
-          <div className="flex justify-center lg:justify-start gap-6 mb-10">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 size={20} className="text-[#A7D1C6]" />
-              <span className="text-sm md:text-base font-semibold tracking-wide">Faster Bookings</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 size={20} className="text-[#A7D1C6]" />
-              <span className="text-sm md:text-base font-semibold tracking-wide">Live Tracking</span>
-            </div>
-          </div>
+          <NotifyForm />
 
-          {/* Clean Actions: QR Code & Buttons */}
-          <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 bg-white/5 p-4 md:p-6 rounded-3xl border border-white/10 backdrop-blur-sm shadow-xl">
-            
-            {/* Real QR Code Box */}
-            <div className={`bg-white p-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col items-center justify-center min-w-[120px] transition-all duration-700 ease-in-out ${isAnimated ? 'shadow-white/20 -translate-y-1' : ''}`}>
-              <img 
-                src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://murammat.pk" 
-                alt="Murammat QR Code" 
-                className="w-[80px] h-[80px] mix-blend-multiply"
-              />
-              <span className="text-[10px] font-extrabold text-gray-800 mt-3 tracking-[0.2em] uppercase text-center leading-tight">
-                Scan to<br/>Download
-              </span>
-            </div>
-
-            {/* Divider */}
-            <div className="hidden sm:block w-px h-24 bg-white/20"></div>
-
-            {/* Official Store Badges */}
-            <div className="flex flex-col gap-4 w-full sm:w-auto">
-              {/* Apple App Store Badge */}
-              <a 
-                href="#" 
-                onClick={(e) => e.preventDefault()}
-                className="hover:-translate-y-1 hover:scale-105 transition-all duration-300 drop-shadow-md"
+          {/* Store placeholders */}
+          <div style={{
+            display: 'flex', gap: '12px', justifyContent: 'center',
+            marginTop: '24px', paddingTop: '20px',
+            borderTop: '1px solid rgba(255,255,255,0.1)',
+          }}>
+            {[
+              { label: 'App Store', icon: '' },
+              { label: 'Google Play', icon: '' },
+            ].map(store => (
+              <div
+                key={store.label}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  borderRadius: '12px',
+                  padding: '10px 18px',
+                  flex: 1, justifyContent: 'center',
+                }}
               >
-                <img 
-                  src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg" 
-                  alt="Download on the App Store" 
-                  className="h-[44px] w-auto" 
-                />
-              </a>
-
-              {/* Google Play Store Badge */}
-              <a 
-                href="#" 
-                onClick={(e) => e.preventDefault()}
-                className="hover:-translate-y-1 hover:scale-105 transition-all duration-300 drop-shadow-md"
-              >
-                <img 
-                  src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" 
-                  alt="Get it on Google Play" 
-                  className="h-[44px] w-auto" 
-                />
-              </a>
-            </div>
+                <span style={{ fontSize: '18px' }}>{store.icon === '' && store.label === 'App Store' ? '🍎' : '▶'}</span>
+                <div>
+                  <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    Available soon
+                  </div>
+                  <div style={{ color: '#ffffff', fontSize: '13px', fontWeight: 700 }}>
+                    {store.label}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Pure CSS Mobile Phone Mockup */}
-        <div className="w-full lg:w-1/2 flex justify-center mt-16 lg:mt-0 perspective-1000">
-          
-          {/* CSS Phone Frame */}
-          <div 
-            className={`relative w-[280px] sm:w-[320px] h-[580px] sm:h-[650px] bg-[#111] rounded-[3rem] border-[12px] sm:border-[14px] border-[#222] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col z-20 transition-all duration-1000 ease-in-out transform ${isAnimated ? '-translate-y-6 rotate-2 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.9)]' : 'translate-y-12 opacity-0'}`}
-          >
-            {/* Phone Hardware accents */}
-            <div className="absolute top-1/4 -right-3 sm:-right-4 w-1 sm:w-1.5 h-16 bg-[#333] rounded-l-md"></div>
-            <div className="absolute top-20 -left-3 sm:-left-4 w-1 sm:w-1.5 h-10 bg-[#333] rounded-r-md"></div>
-            <div className="absolute top-36 -left-3 sm:-left-4 w-1 sm:w-1.5 h-16 bg-[#333] rounded-r-md"></div>
-
-            {/* Dynamic Phone Notch / Dynamic Island */}
-            <div className="absolute top-2 inset-x-0 h-6 sm:h-7 bg-[#111] rounded-3xl w-[35%] mx-auto z-30 shadow-[0_2px_10px_rgba(0,0,0,0.5)]"></div>
-            
-            {/* App Screen Container */}
-            <div className="w-full h-full bg-white relative rounded-[2rem] overflow-hidden">
-              <img 
-                src={mobileAppImg} 
-                alt="Murammat App Interface" 
-                className="w-full h-full object-cover object-top"
-              />
-              
-              {/* Overlay gradient to simulate screen depth and reflections */}
-              <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.1)] pointer-events-none"></div>
-              <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white/10 to-transparent pointer-events-none"></div>
-            </div>
-
-          </div>
-
-        </div>
       </div>
     </section>
+  );
+};
+
+// ── Notify form sub-component ──────────────────────────────────────────────
+const NotifyForm: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [focused, setFocused] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setSubmitted(true);
+  };
+
+  if (submitted) {
+    return (
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '10px',
+        justifyContent: 'center',
+        background: 'rgba(167,209,198,0.15)',
+        border: '1px solid rgba(167,209,198,0.4)',
+        borderRadius: '14px',
+        padding: '14px 20px',
+      }}>
+        <span style={{ fontSize: '20px' }}>🎉</span>
+        <span style={{ color: '#A7D1C6', fontWeight: 600, fontSize: '14px' }}>
+          You're on the list! We'll notify you at launch.
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px' }}>
+      <input
+        type="email"
+        required
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        placeholder="your@email.com"
+        style={{
+          flex: 1,
+          padding: '13px 18px',
+          borderRadius: '12px',
+          border: `1px solid ${focused ? 'rgba(167,209,198,0.6)' : 'rgba(255,255,255,0.15)'}`,
+          background: 'rgba(255,255,255,0.08)',
+          color: '#ffffff',
+          fontSize: '14px',
+          outline: 'none',
+          transition: 'border-color 0.2s',
+        }}
+      />
+      <button
+        type="submit"
+        style={{
+          padding: '13px 22px',
+          borderRadius: '12px',
+          border: 'none',
+          background: 'linear-gradient(135deg, #A7D1C6, #00c896)',
+          color: '#003d30',
+          fontWeight: 800,
+          fontSize: '14px',
+          cursor: 'pointer',
+          whiteSpace: 'nowrap',
+          transition: 'opacity 0.15s, transform 0.15s',
+          boxShadow: '0 4px 16px rgba(0,200,150,0.3)',
+        }}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLButtonElement).style.opacity = '0.88';
+          (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLButtonElement).style.opacity = '1';
+          (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
+        }}
+      >
+        Notify Me
+      </button>
+    </form>
   );
 };
 

@@ -41,6 +41,12 @@ const LinkedinIcon = ({ size = 18 }: { size?: number }) => (
   </svg>
 );
 
+const TiktokIcon = ({ size = 18 }: { size?: number }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M15 2a3 3 0 0 0 3 3v2a5 5 0 0 1-5-5h-2v11a3 3 0 1 1-3-3v-2a5 5 0 1 0 5 5V2z" />
+  </svg>
+);
+
 const AppleIcon = ({ size = 18, fill = "currentColor" }: { size?: number, fill?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="none">
     <path d="M12 2.04C10.85 2 9.98 2.88 9 3.84A4.8 4.8 0 0 0 8 7A4.8 4.8 0 0 0 9 10.16c.98.96 1.85 1.84 3 1.84s2.02-.88 3-1.84A4.8 4.8 0 0 0 16 7a4.8 4.8 0 0 0-1-3.16C14.02 2.88 13.15 2 12 2zM12 11c-2.4 0-4.66 1.14-5.94 3.09C4.85 15.93 4 18 4 20c0 1.58.63 3.04 1.76 4.19l.06.05.04.05L7 25c.34.42 1 .5 1.5.5s1.16-.08 1.5-.5L12 23.16 14 25c.34.42 1 .5 1.5.5s1.16-.08 1.5-.5l1.14-1.87.04-.05.06-.05C19.37 23.04 20 21.58 20 20c0-2-.85-4.07-2.06-5.91C16.66 12.14 14.4 11 12 11z"/>
@@ -64,11 +70,12 @@ const customerLinks = [
 ];
 
 const socialLinks = [
-  { id: 1, icon: <FacebookIcon size={18} />, url: '#' },
-  { id: 2, icon: <InstagramIcon size={18} />, url: '#' },
-  { id: 3, icon: <YoutubeIcon size={18} />, url: '#' },
-  { id: 4, icon: <TwitterIcon size={18} />, url: '#' },
-  { id: 5, icon: <LinkedinIcon size={18} />, url: '#' },
+  { id: 1, icon: <FacebookIcon size={18} />, url: 'https://www.facebook.com/profile.php?id=61570663409989' },
+  { id: 2, icon: <InstagramIcon size={18} />, url: 'https://www.instagram.com/murammat_pk' },
+  { id: 3, icon: <TiktokIcon size={18} />, url: 'https://www.tiktok.com/@murammat.pk' },
+  { id: 4, icon: <YoutubeIcon size={18} />, url: 'https://www.youtube.com/@Murammat-admin' },
+  { id: 5, icon: <TwitterIcon size={18} />, url: '#' },
+  { id: 6, icon: <LinkedinIcon size={18} />, url: '#' },
 ];
 
 // ==========================================
@@ -106,6 +113,8 @@ const Footer: React.FC = () => {
                 <a 
                   key={social.id} 
                   href={social.url} 
+                  target={social.url !== '#' ? "_blank" : undefined}
+                  rel={social.url !== '#' ? "noopener noreferrer" : undefined}
                   className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center text-gray-400 hover:text-white hover:border-[#00674F] hover:bg-[#00674F] transition-all duration-300"
                 >
                   {social.icon}
