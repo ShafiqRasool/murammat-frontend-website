@@ -35,10 +35,9 @@ const Navbar = () => {
           
           {/* 1. Logo Section (Always Visible) */}
           <div className="flex-shrink-0 flex items-center">
-            {/* Temporary Logo styling until you plug in your Leonardo AI image */}
-            <Link to="/" className="text-2xl font-bold flex items-center gap-2">
-              <div className="w-8 h-8 bg-[#00674F] rounded-md flex items-center justify-center text-white font-bold text-lg">M</div>
-              <span className="text-gray-900 tracking-tight text-xl sm:text-2xl">
+            <Link to="/" className="flex items-center gap-2">
+              <img src="/logo.png" alt="Murammat.pk" className="h-10 w-auto object-contain" />
+              <span className="text-gray-900 font-bold tracking-tight text-xl sm:text-2xl">
                 Murammat<span className="text-[#00674F]">.pk</span>
               </span>
             </Link>

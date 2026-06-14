@@ -92,11 +92,8 @@ const Footer: React.FC = () => {
           
           {/* Column 1: Brand & About */}
           <div className="lg:col-span-1">
-            {/* Logo Placeholder - You can replace this with your actual image logo */}
             <div className="flex items-center gap-2 mb-6 cursor-pointer">
-              <div className="w-8 h-8 bg-[#00674F] rounded-md flex items-center justify-center">
-                <span className="text-white font-bold text-xl leading-none">M</span>
-              </div>
+              <img src="/logo.png" alt="Murammat.pk" className="h-10 w-auto object-contain bg-white rounded-md p-1" />
               <span className="text-2xl font-bold text-white tracking-tight">
                 Murammat<span className="text-[#00674F]">.pk</span>
               </span>
