@@ -13,6 +13,8 @@ export default function Checkout() {
   const dispatch = useDispatch();
   const { token, user } = useSelector((state: RootState) => state.auth);
 
+  const mediaBaseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3000/api').replace(/\/api$/, '');
+
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [service, setService] = useState<any>(null);
@@ -351,7 +353,7 @@ export default function Checkout() {
               <div className="border border-[#00674F]/20 hover:border-[#00674F]/40 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-5 w-full md:max-w-md transition-colors bg-[#00674F]/[0.02]">
                 <div className="w-24 h-24 bg-white rounded-xl overflow-hidden shrink-0 shadow-sm border border-gray-100 p-1">
                   {service?.image_url ? (
-                    <img src={service.image_url.startsWith('http') ? service.image_url : `http://localhost:3000/${service.image_url}`} alt={service.name} className="w-full h-full object-cover rounded-lg" />
+                    <img src={service.image_url.startsWith('http') ? service.image_url : `${mediaBaseUrl}/${service.image_url}`} alt={service.name} className="w-full h-full object-cover rounded-lg" />
                   ) : (
                     <div className="w-full h-full bg-gray-50 flex items-center justify-center text-xs text-gray-400 rounded-lg">No Img</div>
                   )}
