@@ -118,7 +118,7 @@ const Navbar = () => {
             {/* Phone Call Button (Visible on ALL screens) */}
             {/* The href="tel:..." automatically opens the phone dialer */}
             <a 
-              href="tel:03218180319" 
+              href="tel:03274540905" 
               className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-[#00674F] rounded-full text-white shadow-md hover:bg-[#00523f] transition-all transform hover:scale-105"
               aria-label="Call Us"
             >

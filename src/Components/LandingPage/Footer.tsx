@@ -157,8 +157,8 @@ const Footer: React.FC = () => {
               </li>
               <li className="flex items-center gap-3 group">
                 <Phone size={18} className="text-[#00674F] group-hover:scale-110 transition-transform" />
-                <a href="tel:03218180319" className="text-sm text-gray-300 hover:text-white transition-colors">
-                  0321-818-0319 {/* Referenced your provided number */}
+                <a href="tel:03274540905" className="text-sm text-gray-300 hover:text-white transition-colors">
+                  0327-454-0905
                 </a>
               </li>
               <li className="flex items-center gap-3 group">
@@ -212,7 +212,7 @@ const Footer: React.FC = () => {
         
         {/* Main Button */}
         <a 
-          href="https://wa.me/923218180319" 
+          href="https://wa.me/923274540905" 
           target="_blank" 
           rel="noopener noreferrer"
           className="relative bg-gradient-to-tr from-[#128C7E] to-[#25D366] text-white p-4 rounded-full shadow-[0_4px_20px_rgba(37,211,102,0.4)] hover:shadow-[0_8px_30px_rgba(37,211,102,0.6)] hover:-translate-y-1 hover:scale-105 transition-all duration-300 flex items-center justify-center"
