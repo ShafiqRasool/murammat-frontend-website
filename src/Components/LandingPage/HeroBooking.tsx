@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, CheckCircle, Map, ShieldCheck, Star, Banknote } from 'lucide-react';
 import API from '../../utils/api';
 
@@ -11,7 +12,8 @@ interface FormData {
 }
 
 const HeroBooking: React.FC = () => {
-  const [adminServices, setAdminServices] = useState<string[]>([]);
+  const navigate = useNavigate();
+  const [adminServices, setAdminServices] = useState<Array<{ id: string; name: string }>>([]);
   const [lahoreAreas, setLahoreAreas] = useState<string[]>([]);
 
   useEffect(() => {
@@ -22,7 +24,7 @@ const HeroBooking: React.FC = () => {
           API.get('/public/areas')
         ]);
         if (servicesRes.data) {
-          setAdminServices(servicesRes.data.map((s: any) => s.name));
+          setAdminServices(servicesRes.data.map((s: any) => ({ id: s.id, name: s.name })));
         }
         if (areasRes.data) {
           setLahoreAreas(areasRes.data.map((a: any) => a.name));
@@ -52,7 +54,7 @@ const HeroBooking: React.FC = () => {
 
   // dynamically filters the list based on user typing
   const filteredServices = adminServices.filter(service =>
-    service.toLowerCase().includes(searchQuery.toLowerCase())
+    service.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -94,9 +96,18 @@ const HeroBooking: React.FC = () => {
   };
 
   const handleTagClick = (serviceName: string) => {
-    setSearchQuery(serviceName);
-    setFormData(prev => ({ ...prev, service: serviceName }));
-    setShowSearchDropdown(false);
+    const foundService = adminServices.find(s => s.name.toLowerCase() === serviceName.toLowerCase());
+    if (foundService) {
+      navigate(`/services/${foundService.id}`);
+    } else {
+      setSearchQuery(serviceName);
+      setFormData(prev => ({ ...prev, service: serviceName }));
+      setShowSearchDropdown(false);
+    }
+  };
+
+  const handleSuggestionClick = (serviceId: string) => {
+    navigate(`/services/${serviceId}`);
   };
 
   const popularTags = ['AC Repair', 'Electrical Services', 'Plumbing Services', 'Cleaning Services'];
@@ -126,13 +137,13 @@ const HeroBooking: React.FC = () => {
     <div className="w-full bg-gradient-to-br from-[#012218] via-[#003B2D] to-[#012218] text-white py-20 px-4 sm:px-6 lg:px-8 relative antialiased overflow-hidden group">
       <style>{`
         @keyframes float-blob-1 {
-          0%, 100% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -40px) scale(1.08); }
-          66% { transform: translate(-20px, 20px) scale(0.96); }
+          0%, 100% { transform: translate3d(0px, 0px, 0) scale(1); }
+          33% { transform: translate3d(30px, -40px, 0) scale(1.08); }
+          66% { transform: translate3d(-20px, 20px, 0) scale(0.96); }
         }
         @keyframes float-blob-2 {
-          0%, 100% { transform: translate(0px, 0px) scale(1.05); }
-          50% { transform: translate(-30px, 30px) scale(0.92); }
+          0%, 100% { transform: translate3d(0px, 0px, 0) scale(1.05); }
+          50% { transform: translate3d(-30px, 30px, 0) scale(0.92); }
         }
         @keyframes text-shimmer {
           0% { background-position: 0% 50%; }
@@ -141,9 +152,11 @@ const HeroBooking: React.FC = () => {
         }
         .animate-float-blob-1 {
           animation: float-blob-1 12s ease-in-out infinite;
+          will-change: transform;
         }
         .animate-float-blob-2 {
           animation: float-blob-2 15s ease-in-out infinite;
+          will-change: transform;
         }
         .animate-text-shimmer {
           background-size: 200% auto;
@@ -226,17 +239,17 @@ const HeroBooking: React.FC = () => {
                       {filteredServices.map((service, idx) => (
                         <li 
                           key={idx}
-                          onMouseDown={() => handleTagClick(service)}
+                          onMouseDown={() => handleSuggestionClick(service.id)}
                           className="px-5 py-3 hover:bg-[#009b77]/20 cursor-pointer text-sm text-emerald-100 border-b border-white/5 last:border-none transition-colors"
                         >
                           {searchQuery ? (
-                            service.split(new RegExp(`(${searchQuery})`, 'gi')).map((part, i) => 
+                            service.name.split(new RegExp(`(${searchQuery})`, 'gi')).map((part, i) => 
                               part.toLowerCase() === searchQuery.toLowerCase() 
                                 ? <span key={i} className="font-bold text-[#00ffc4]">{part}</span> 
                                 : part
                             )
                           ) : (
-                            service
+                            service.name
                           )}
                         </li>
                       ))}
@@ -336,7 +349,7 @@ const HeroBooking: React.FC = () => {
                 >
                   <option value="" disabled className="bg-slate-900 text-slate-500">Select Service</option>
                   {adminServices.map((service, idx) => (
-                    <option key={idx} value={service} className="bg-slate-900 text-slate-200">{service}</option>
+                    <option key={idx} value={service.name} className="bg-slate-900 text-slate-200">{service.name}</option>
                   ))}
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400">
