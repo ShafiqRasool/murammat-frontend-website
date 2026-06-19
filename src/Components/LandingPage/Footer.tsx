@@ -1,8 +1,8 @@
 import React from 'react';
-import { 
-  Phone, 
-  Mail, 
-  Play 
+import {
+  Phone,
+  Mail,
+  Play
 } from 'lucide-react';
 
 // Custom Brand Icons (Fallback since lucide-react deprecated brand icons)
@@ -47,9 +47,15 @@ const TiktokIcon = ({ size = 18 }: { size?: number }) => (
   </svg>
 );
 
+const PinterestIcon = ({ size = 18 }: { size?: number }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.966 1.406-5.966s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.218-.173.263-.4.157-1.498-.697-2.434-2.885-2.434-4.637 0-3.778 2.748-7.247 7.915-7.247 4.15 0 7.378 2.96 7.378 6.907 0 4.126-2.6 7.447-6.212 7.447-1.213 0-2.355-.631-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146 1.124.347 2.317.535 3.554.535 6.627 0 11.993-5.366 11.993-11.985C24.014 5.367 18.643 0 12.017 0z" />
+  </svg>
+);
+
 const AppleIcon = ({ size = 18, fill = "currentColor" }: { size?: number, fill?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="none">
-    <path d="M12 2.04C10.85 2 9.98 2.88 9 3.84A4.8 4.8 0 0 0 8 7A4.8 4.8 0 0 0 9 10.16c.98.96 1.85 1.84 3 1.84s2.02-.88 3-1.84A4.8 4.8 0 0 0 16 7a4.8 4.8 0 0 0-1-3.16C14.02 2.88 13.15 2 12 2zM12 11c-2.4 0-4.66 1.14-5.94 3.09C4.85 15.93 4 18 4 20c0 1.58.63 3.04 1.76 4.19l.06.05.04.05L7 25c.34.42 1 .5 1.5.5s1.16-.08 1.5-.5L12 23.16 14 25c.34.42 1 .5 1.5.5s1.16-.08 1.5-.5l1.14-1.87.04-.05.06-.05C19.37 23.04 20 21.58 20 20c0-2-.85-4.07-2.06-5.91C16.66 12.14 14.4 11 12 11z"/>
+    <path d="M12 2.04C10.85 2 9.98 2.88 9 3.84A4.8 4.8 0 0 0 8 7A4.8 4.8 0 0 0 9 10.16c.98.96 1.85 1.84 3 1.84s2.02-.88 3-1.84A4.8 4.8 0 0 0 16 7a4.8 4.8 0 0 0-1-3.16C14.02 2.88 13.15 2 12 2zM12 11c-2.4 0-4.66 1.14-5.94 3.09C4.85 15.93 4 18 4 20c0 1.58.63 3.04 1.76 4.19l.06.05.04.05L7 25c.34.42 1 .5 1.5.5s1.16-.08 1.5-.5L12 23.16 14 25c.34.42 1 .5 1.5.5s1.16-.08 1.5-.5l1.14-1.87.04-.05.06-.05C19.37 23.04 20 21.58 20 20c0-2-.85-4.07-2.06-5.91C16.66 12.14 14.4 11 12 11z" />
   </svg>
 );
 
@@ -74,8 +80,9 @@ const socialLinks = [
   { id: 2, icon: <InstagramIcon size={18} />, url: 'https://www.instagram.com/murammat_pk' },
   { id: 3, icon: <TiktokIcon size={18} />, url: 'https://www.tiktok.com/@murammat.pk' },
   { id: 4, icon: <YoutubeIcon size={18} />, url: 'https://www.youtube.com/@Murammat-admin' },
-  { id: 5, icon: <TwitterIcon size={18} />, url: '#' },
-  { id: 6, icon: <LinkedinIcon size={18} />, url: '#' },
+  { id: 5, icon: <PinterestIcon size={18} />, url: 'https://pin.it/7f3sbiIwW' },
+  { id: 6, icon: <TwitterIcon size={18} />, url: '#' },
+  { id: 7, icon: <LinkedinIcon size={18} />, url: '#' },
 ];
 
 // ==========================================
@@ -86,10 +93,10 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-[#1A1A1A] text-gray-300 pt-16 pb-8 relative antialiased border-t-[6px] border-[#00674F]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Top Grid Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
-          
+
           {/* Column 1: Brand & About */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-6 cursor-pointer">
@@ -98,7 +105,7 @@ const Footer: React.FC = () => {
                 Murammat<span className="text-[#00674F]">.pk</span>
               </span>
             </div>
-            
+
             <p className="text-sm text-gray-400 leading-relaxed mb-8">
               When it comes to Murammat.pk, the object of the word 'Murammat' reflects our motive to add value to our customers' lives by providing all essential home services. On the other hand, we aim to reduce unemployment in Pakistan by hiring in-house staff whom we train in given skills.
             </p>
@@ -107,9 +114,9 @@ const Footer: React.FC = () => {
             <div className="flex items-center gap-3">
               <span className="text-white font-semibold text-sm mr-2">Follow Us</span>
               {socialLinks.map((social) => (
-                <a 
-                  key={social.id} 
-                  href={social.url} 
+                <a
+                  key={social.id}
+                  href={social.url}
                   target={social.url !== '#' ? "_blank" : undefined}
                   rel={social.url !== '#' ? "noopener noreferrer" : undefined}
                   className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center text-gray-400 hover:text-white hover:border-[#00674F] hover:bg-[#00674F] transition-all duration-300"
@@ -174,13 +181,13 @@ const Footer: React.FC = () => {
 
         {/* Bottom Bar: Copyright & App Links */}
         <div className="pt-8 border-t border-gray-800 flex flex-col lg:flex-row justify-between items-center gap-6">
-          
+
           <div className="text-xs text-gray-500 text-center lg:text-left">
             Copyright © 2024 - 2026 Murammat.pk. Murammat.pk logo and related marks are registered Trademarks of Murammat.
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-6">
-            
+
             {/* App Store Icons */}
             <div className="flex items-center gap-3">
               <span className="text-white font-semibold text-sm">Mobile App</span>
@@ -209,20 +216,20 @@ const Footer: React.FC = () => {
         <div className="absolute -top-12 right-2 bg-white text-gray-800 text-sm font-bold px-4 py-2 rounded-2xl shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none translate-y-2 group-hover:translate-y-0 before:content-[''] before:absolute before:top-full before:right-4 before:border-[6px] before:border-transparent before:border-t-white">
           Chat with us!
         </div>
-        
+
         {/* Main Button */}
-        <a 
-          href="https://wa.me/923274540905" 
-          target="_blank" 
+        <a
+          href="https://wa.me/923274540905"
+          target="_blank"
           rel="noopener noreferrer"
           className="relative bg-gradient-to-tr from-[#128C7E] to-[#25D366] text-white p-4 rounded-full shadow-[0_4px_20px_rgba(37,211,102,0.4)] hover:shadow-[0_8px_30px_rgba(37,211,102,0.6)] hover:-translate-y-1 hover:scale-105 transition-all duration-300 flex items-center justify-center"
           aria-label="Contact us on WhatsApp"
         >
           {/* Pulsing rings for attention */}
           <span className="absolute inset-0 rounded-full border-2 border-[#25D366] animate-ping opacity-75 hidden sm:block"></span>
-          
+
           <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16" className="relative z-10 drop-shadow-md">
-            <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c-.003 1.396.362 2.76.105 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+            <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c-.003 1.396.362 2.76.105 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" />
           </svg>
         </a>
       </div>

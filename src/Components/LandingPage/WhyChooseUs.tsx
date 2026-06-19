@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShieldCheck, Cpu, HardHat, Banknote, Clock, Award, FileBadge } from 'lucide-react';
+import whyChooseUsImg from '../../assets/LandingPage/why-choose-us.jpg';
 
 const features = [
   { id: 1, text: 'Vetted and background-checked in-house staff', icon: <ShieldCheck size={24} /> },
@@ -42,15 +43,10 @@ const WhyChooseUs: React.FC = () => {
 
             {/* Main Image */}
             <div className="relative z-10 w-full max-w-[450px] aspect-square shadow-2xl rounded-sm overflow-hidden border-4 border-white">
-              {/* Replace the src with your actual image path */}
               <img 
-                src="/assets/LandingPage/why-choose-us.jpg" 
+                src={whyChooseUsImg} 
                 alt="Murammat Professional Tools" 
                 className="w-full h-full object-cover"
-                // Fallback placeholder if image isn't loaded yet
-                onError={(e) => {
-                   (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1581141849291-1125c7b692b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-                }}
               />
             </div>
           </div>

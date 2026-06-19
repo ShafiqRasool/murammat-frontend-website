@@ -17,7 +17,6 @@ const Navbar = () => {
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'Why Murammat', href: '/why-murammat' },
-    { name: 'Track my order', href: '/track-order' },
     { name: 'Blog', href: '/blog' },
     { name: 'Contact Us', href: '/contact' },
   ];
@@ -58,6 +57,18 @@ const Navbar = () => {
                 {link.name}
               </NavLink>
             ))}
+            {isAuthenticated && (
+              <NavLink 
+                to="/my-profile" 
+                className={({ isActive }) => 
+                  `font-medium transition-colors duration-200 text-sm lg:text-base ${
+                    isActive ? 'text-[#00674F] font-semibold' : 'text-gray-700 hover:text-[#00674F]'
+                  }`
+                }
+              >
+                My Profile
+              </NavLink>
+            )}
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4">
@@ -78,36 +89,32 @@ const Navbar = () => {
 
                   {/* Dropdown Menu */}
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
-                      <div className="px-4 py-2 border-b border-gray-100">
-                        <p className="text-sm font-medium text-gray-900 truncate">{user?.email}</p>
-                        <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setIsUserMenuOpen(false)} />
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
+                        <div className="px-4 py-2 border-b border-gray-100">
+                          <p className="text-sm font-medium text-gray-900 truncate">{user?.email}</p>
+                          <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+                        </div>
+                        <Link 
+                          to="/profile" 
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#00674F] transition-colors"
+                        >
+                          Edit Profile
+                        </Link>
+                        <div className="border-t border-gray-100 my-1"></div>
+                        <button 
+                          onClick={() => {
+                            setIsUserMenuOpen(false);
+                            handleLogout();
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-[#dc2626] hover:bg-red-50 transition-colors"
+                        >
+                          Logout
+                        </button>
                       </div>
-                      <Link 
-                        to="/dashboard" 
-                        onClick={() => setIsUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#00674F] transition-colors"
-                      >
-                        Dashboard
-                      </Link>
-                      <Link 
-                        to="/profile" 
-                        onClick={() => setIsUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#00674F] transition-colors"
-                      >
-                        Edit Profile
-                      </Link>
-                      <div className="border-t border-gray-100 my-1"></div>
-                      <button 
-                        onClick={() => {
-                          setIsUserMenuOpen(false);
-                          handleLogout();
-                        }}
-                        className="block w-full text-left px-4 py-2 text-sm text-[#dc2626] hover:bg-red-50 transition-colors"
-                      >
-                        Logout
-                      </button>
-                    </div>
+                    </>
                   )}
                 </div>
               ) : (
@@ -163,7 +170,7 @@ const Navbar = () => {
                <Link to="/login" onClick={() => setIsOpen(false)} className="block px-3 py-3 rounded-md text-base font-bold text-[#00674F] text-center bg-gray-50 uppercase">Login / Register</Link>
             ) : (
                <>
-                 <Link to="/dashboard" onClick={() => setIsOpen(false)} className="block px-3 py-3 rounded-md text-base font-bold text-white text-center bg-[#00674F] uppercase">My Dashboard</Link>
+                 <Link to="/my-profile" onClick={() => setIsOpen(false)} className="block px-3 py-3 rounded-md text-base font-bold text-white text-center bg-[#00674F] uppercase">My Profile</Link>
                  <Link to="/profile" onClick={() => setIsOpen(false)} className="block px-3 py-3 rounded-md text-base font-bold text-[#00674F] border border-[#00674F] text-center hover:bg-[#00674F]/5 uppercase mt-2">Edit Profile</Link>
                  <button onClick={handleLogout} className="block w-full px-3 py-3 rounded-md text-base font-bold text-[#dc2626] text-center border border-[#dc2626] hover:bg-[#dc2626] hover:text-white uppercase mt-2">Logout</button>
                </>

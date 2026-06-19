@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import API from '../utils/api';
@@ -7,6 +7,28 @@ import { Input } from '../Components/UI/Input';
 import { Card } from '../Components/UI/Card';
 import { useData } from '../Context/DataContext';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+
+const loadGoogleMapsScript = (callback: () => void) => {
+  if ((window as any).google) {
+    callback();
+    return;
+  }
+  const existingScript = document.getElementById('googleMapsScript');
+  if (!existingScript) {
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBKXixSZWYE5MqJlysVTO_rmi4Y-L_lFN8&libraries=places`;
+    script.id = 'googleMapsScript';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+    script.onload = () => {
+      if (callback) callback();
+    };
+  } else {
+    existingScript.addEventListener('load', callback);
+  }
+};
 
 export default function EditProfile() {
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -22,8 +44,16 @@ export default function EditProfile() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [addressLine1, setAddressLine1] = useState('');
-  const [cityId, setCityId] = useState('');
-  const [areaId, setAreaId] = useState('');
+  const [latitude, setLatitude] = useState<number | null>(31.5204);
+  const [longitude, setLongitude] = useState<number | null>(74.3587);
+  const [addressId, setAddressId] = useState<string | null>(null);
+
+  // Map Refs & State
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [map, setMap] = useState<any>(null);
+  const [marker, setMarker] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLocating, setIsLocating] = useState(false);
 
   // Provider State
   const [companyName, setCompanyName] = useState('');
@@ -47,9 +77,24 @@ export default function EditProfile() {
           const data = res.data;
           setFirstName(data.first_name || '');
           setLastName(data.last_name || '');
-          setAddressLine1(data.address_line1 || '');
-          setCityId(data.city_id || '');
-          setAreaId(data.area_id || '');
+          
+          // Fetch address
+          try {
+            const addrRes = await API.get('/addresses');
+            if (addrRes.data && addrRes.data.length > 0) {
+              const defaultAddr = addrRes.data.find((a: any) => a.is_default) || addrRes.data[0];
+              setAddressId(defaultAddr.id);
+              setAddressLine1(defaultAddr.address_line1 || '');
+              if (defaultAddr.latitude !== null && defaultAddr.latitude !== undefined) {
+                setLatitude(parseFloat(defaultAddr.latitude));
+              }
+              if (defaultAddr.longitude !== null && defaultAddr.longitude !== undefined) {
+                setLongitude(parseFloat(defaultAddr.longitude));
+              }
+            }
+          } catch (addrErr) {
+            console.error('Failed to load address info', addrErr);
+          }
         } else {
           const res = await API.get('/profile/provider');
           const data = res.data;
@@ -78,6 +123,130 @@ export default function EditProfile() {
     fetchProfile();
   }, [user, isAuthenticated, navigate]);
 
+  // Load Google Map on Mount
+  useEffect(() => {
+    if (loading || user?.role !== 'customer') return;
+
+    loadGoogleMapsScript(() => {
+      if (!mapRef.current) return;
+      const google = (window as any).google;
+      const initialLocation = { lat: latitude || 31.5204, lng: longitude || 74.3587 };
+
+      const newMap = new google.maps.Map(mapRef.current, {
+        center: initialLocation,
+        zoom: 14,
+        disableDefaultUI: true,
+        zoomControl: true,
+      });
+
+      const newMarker = new google.maps.Marker({
+        position: initialLocation,
+        map: newMap,
+        draggable: true,
+      });
+
+      setMap(newMap);
+      setMarker(newMarker);
+
+      // Draggable marker listener
+      newMarker.addListener('dragend', () => {
+        const pos = newMarker.getPosition();
+        if (pos) {
+          const lat = pos.lat();
+          const lng = pos.lng();
+          setLatitude(lat);
+          setLongitude(lng);
+          reverseGeocode(lat, lng);
+        }
+      });
+
+      // Map click listener to relocation pin
+      newMap.addListener('click', (e: any) => {
+        const pos = e.latLng;
+        if (pos) {
+          newMarker.setPosition(pos);
+          const lat = pos.lat();
+          const lng = pos.lng();
+          setLatitude(lat);
+          setLongitude(lng);
+          reverseGeocode(lat, lng);
+        }
+      });
+    });
+  }, [loading]);
+
+  const reverseGeocode = async (lat: number, lng: number) => {
+    try {
+      const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBKXixSZWYE5MqJlysVTO_rmi4Y-L_lFN8`);
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        const address = data.results[0].formatted_address;
+        setAddressLine1(address);
+      }
+    } catch (err) {
+      console.error('Error reverse geocoding:', err);
+    }
+  };
+
+  const handleSearchLocation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    try {
+      const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(searchQuery)}&key=AIzaSyBKXixSZWYE5MqJlysVTO_rmi4Y-L_lFN8`);
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        const loc = data.results[0].geometry.location;
+        const address = data.results[0].formatted_address;
+        
+        setLatitude(loc.lat);
+        setLongitude(loc.lng);
+        setAddressLine1(address);
+
+        if (map && marker) {
+          const google = (window as any).google;
+          const pos = new google.maps.LatLng(loc.lat, loc.lng);
+          map.setCenter(pos);
+          marker.setPosition(pos);
+        }
+      } else {
+        toast.error('Location not found');
+      }
+    } catch (err) {
+      console.error('Error searching location:', err);
+      toast.error('Search failed');
+    }
+  };
+
+  const handleCurrentLocation = () => {
+    if (navigator.geolocation) {
+      setIsLocating(true);
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setIsLocating(false);
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          setLatitude(lat);
+          setLongitude(lng);
+
+          if (map && marker) {
+            const google = (window as any).google;
+            const pos = new google.maps.LatLng(lat, lng);
+            map.setCenter(pos);
+            marker.setPosition(pos);
+          }
+          reverseGeocode(lat, lng);
+        },
+        (err) => {
+          setIsLocating(false);
+          toast.error('Error getting location: ' + err.message);
+        }
+      );
+    } else {
+      toast.error('Geolocation is not supported by your browser.');
+    }
+  };
+
   const handleServiceToggle = (id: string) => {
     setServiceIds(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]);
   };
@@ -105,27 +274,52 @@ export default function EditProfile() {
 
     try {
       if (user?.role === 'customer') {
+        // 1. Update Profile
         await API.put('/profile/customer', {
-          first_name: firstName,
-          last_name: lastName,
-          address_line1: addressLine1,
-          city_id: cityId,
-          area_id: areaId,
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
         });
+
+        // Resolve default city & area for backend validator compatibility
+        const defaultCityId = cities[0]?.id || 'ccc11111-1111-4111-8111-111111111111';
+        const defaultAreaId = getAreasByCity(defaultCityId)[0]?.id || 'aaa11111-1111-4111-8111-111111111111';
+
+        // 2. Add or Update Address
+        if (addressId) {
+          await API.put(`/addresses/${addressId}`, {
+            address_line1: addressLine1.trim(),
+            city_id: defaultCityId,
+            area_id: defaultAreaId,
+            latitude,
+            longitude
+          });
+        } else {
+          await API.post('/addresses', {
+            address_line1: addressLine1.trim(),
+            city_id: defaultCityId,
+            area_id: defaultAreaId,
+            latitude,
+            longitude
+          });
+        }
+        
+        toast.success('Profile updated successfully!');
         setSuccess('Profile updated successfully!');
       } else {
         await API.put('/profile/provider', {
-          first_name: firstName,
-          last_name: lastName,
-          company_name: companyName,
-          phone,
-          email,
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          company_name: companyName.trim(),
+          phone: phone.trim(),
+          email: email.trim(),
           service_ids: serviceIds,
         });
+        toast.success('Profile updated successfully!');
         setSuccess('Profile updated successfully! Note: You will need to be re-approved by the admin.');
       }
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to update profile.');
+      toast.error(err.response?.data?.error || 'Failed to update profile.');
     } finally {
       setSaving(false);
     }
@@ -181,22 +375,39 @@ export default function EditProfile() {
 
           {user?.role === 'customer' && (
             <div className="space-y-6">
-              <Input label="Address Line 1" required value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col gap-1">
-                  <label className="text-sm font-semibold text-[#878787]">City</label>
-                  <select required value={cityId} onChange={(e) => { setCityId(e.target.value); setAreaId(''); }} className="px-4 py-2 bg-white rounded-lg border border-gray-300 focus:outline-none focus:border-[#00674F] shadow-sm transition-all duration-300">
-                    <option value="">Select City</option>
-                    {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
+              <Input label="Address Details" required value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} placeholder="House #, Street name" />
+              
+              {/* Map Location Picker */}
+              <div className="flex flex-col gap-3">
+                <label className="text-sm font-semibold text-[#878787]">Pin Exact Location on Map</label>
+                
+                {/* Search Location Bar */}
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    placeholder="Search location on map..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-[#00674F] h-10 text-sm"
+                  />
+                  <Button type="button" onClick={handleSearchLocation} className="h-10 px-4">Search</Button>
                 </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-sm font-semibold text-[#878787]">Area</label>
-                  <select required value={areaId} onChange={(e) => setAreaId(e.target.value)} className="px-4 py-2 bg-white rounded-lg border border-gray-300 focus:outline-none focus:border-[#00674F] shadow-sm transition-all duration-300 disabled:opacity-50" disabled={!cityId}>
-                    <option value="">Select Area</option>
-                    {getAreasByCity(cityId).map((a: any) => <option key={a.id} value={a.id}>{a.name}</option>)}
-                  </select>
-                </div>
+
+                {/* Map Container */}
+                <div 
+                  ref={mapRef} 
+                  className="w-full h-64 rounded-xl border border-gray-300 overflow-hidden shadow-inner bg-gray-100" 
+                />
+
+                {/* Current Location Button */}
+                <Button 
+                  type="button" 
+                  onClick={handleCurrentLocation} 
+                  variant="outline" 
+                  className="w-full flex items-center justify-center gap-2 border-dashed border-[#00674F] text-[#00674F] hover:bg-[#00674F]/5 h-10"
+                >
+                  {isLocating ? 'Locating...' : '📍 Use Current Location'}
+                </Button>
               </div>
             </div>
           )}

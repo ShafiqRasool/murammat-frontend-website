@@ -114,8 +114,10 @@ const HeroBooking: React.FC = () => {
   }
 
   return (
-    <div className="w-full bg-[#FAFAFA] py-12 px-4 sm:px-6 lg:px-8 relative antialiased overflow-hidden">
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#00674F]/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div className="w-full bg-[#FAFAFA] py-12 px-4 sm:px-6 lg:px-8 relative antialiased">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-inherit">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#00674F]/5 rounded-full blur-3xl"></div>
+      </div>
 
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-8 lg:gap-6">
         

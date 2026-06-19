@@ -1,46 +1,190 @@
-import React, { useState, useEffect } from 'react';
-import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import React, { useState, useEffect, useRef } from 'react';
 import API from '../utils/api';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../store/authSlice';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '../Components/UI/Button';
 import { Input } from '../Components/UI/Input';
 import { Card } from '../Components/UI/Card';
 import { useData } from '../Context/DataContext';
+import toast from 'react-hot-toast';
+
+const loadGoogleMapsScript = (callback: () => void) => {
+  if ((window as any).google) {
+    callback();
+    return;
+  }
+  const existingScript = document.getElementById('googleMapsScript');
+  if (!existingScript) {
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBKXixSZWYE5MqJlysVTO_rmi4Y-L_lFN8&libraries=places`;
+    script.id = 'googleMapsScript';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+    script.onload = () => {
+      if (callback) callback();
+    };
+  } else {
+    existingScript.addEventListener('load', callback);
+  }
+};
 
 export default function Register() {
-  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
-  const { cities, services, getAreasByCity } = useData();
+  const { cities, getAreasByCity } = useData();
   
-  // Step 1 State
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [phone, setPhone] = useState('+92');
-  const [role, setRole] = useState('customer');
-
-  // Step 2 State (Customer)
+  // Profile Fields
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [addressLine1, setAddressLine1] = useState('');
-  const [cityId, setCityId] = useState('');
-  const [areaId, setAreaId] = useState('');
+  const [email, setEmail] = useState('');
 
-  // Step 2 State (Provider extra fields)
-  const [companyName, setCompanyName] = useState('');
-  const [serviceIds, setServiceIds] = useState<string[]>([]);
-  const [documents, setDocuments] = useState<File[]>([]);
+  // Location Fields
+  const [addressLine1, setAddressLine1] = useState('');
+  const [latitude, setLatitude] = useState<number | null>(31.5204);
+  const [longitude, setLongitude] = useState<number | null>(74.3587);
+
+  // Map Refs & State
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [map, setMap] = useState<any>(null);
+  const [marker, setMarker] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLocating, setIsLocating] = useState(false);
   
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
+  const redirectPath = searchParams.get('redirect') || '/my-profile';
 
-  const handleStep1 = async (e: React.FormEvent) => {
+  // Load Google Map on Mount
+  useEffect(() => {
+    loadGoogleMapsScript(() => {
+      if (!mapRef.current) return;
+      const google = (window as any).google;
+      const initialLocation = { lat: 31.5204, lng: 74.3587 }; // Lahore
+
+      const newMap = new google.maps.Map(mapRef.current, {
+        center: initialLocation,
+        zoom: 14,
+        disableDefaultUI: true,
+        zoomControl: true,
+      });
+
+      const newMarker = new google.maps.Marker({
+        position: initialLocation,
+        map: newMap,
+        draggable: true,
+      });
+
+      setMap(newMap);
+      setMarker(newMarker);
+
+      // Draggable marker listener
+      newMarker.addListener('dragend', () => {
+        const pos = newMarker.getPosition();
+        if (pos) {
+          const lat = pos.lat();
+          const lng = pos.lng();
+          setLatitude(lat);
+          setLongitude(lng);
+          reverseGeocode(lat, lng);
+        }
+      });
+
+      // Map click listener to relocation pin
+      newMap.addListener('click', (e: any) => {
+        const pos = e.latLng;
+        if (pos) {
+          newMarker.setPosition(pos);
+          const lat = pos.lat();
+          const lng = pos.lng();
+          setLatitude(lat);
+          setLongitude(lng);
+          reverseGeocode(lat, lng);
+        }
+      });
+    });
+  }, []);
+
+  const reverseGeocode = async (lat: number, lng: number) => {
+    try {
+      const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBKXixSZWYE5MqJlysVTO_rmi4Y-L_lFN8`);
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        const address = data.results[0].formatted_address;
+        setAddressLine1(address);
+      }
+    } catch (err) {
+      console.error('Error reverse geocoding:', err);
+    }
+  };
+
+  const handleSearchLocation = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (phone.length !== 13 || !phone.startsWith('+923')) {
-      setError('Please enter a valid Pakistani phone number (e.g., +923001234567)');
+    if (!searchQuery.trim()) return;
+
+    try {
+      const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(searchQuery)}&key=AIzaSyBKXixSZWYE5MqJlysVTO_rmi4Y-L_lFN8`);
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        const loc = data.results[0].geometry.location;
+        const address = data.results[0].formatted_address;
+        
+        setLatitude(loc.lat);
+        setLongitude(loc.lng);
+        setAddressLine1(address);
+
+        if (map && marker) {
+          const google = (window as any).google;
+          const pos = new google.maps.LatLng(loc.lat, loc.lng);
+          map.setCenter(pos);
+          marker.setPosition(pos);
+        }
+      } else {
+        toast.error('Location not found');
+      }
+    } catch (err) {
+      console.error('Error searching location:', err);
+      toast.error('Search failed');
+    }
+  };
+
+  const handleCurrentLocation = () => {
+    if (navigator.geolocation) {
+      setIsLocating(true);
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setIsLocating(false);
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          setLatitude(lat);
+          setLongitude(lng);
+
+          if (map && marker) {
+            const google = (window as any).google;
+            const pos = new google.maps.LatLng(lat, lng);
+            map.setCenter(pos);
+            marker.setPosition(pos);
+          }
+          reverseGeocode(lat, lng);
+        },
+        (err) => {
+          setIsLocating(false);
+          toast.error('Error getting location: ' + err.message);
+        }
+      );
+    } else {
+      toast.error('Geolocation is not supported by your browser.');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firstName.trim() || !lastName.trim()) {
+      setError('First name and last name are required');
+      return;
+    }
+    if (!addressLine1.trim()) {
+      setError('Address details are required');
       return;
     }
 
@@ -48,123 +192,40 @@ export default function Register() {
     setError('');
 
     try {
-      // 1. Create User
-      await API.post('/users/create', { email, password, phone, role });
-      
-      // 2. Login to get token for profile creation
-      const res = await API.post('/auth/login', { phone, password });
-      
-      dispatch(loginSuccess({
-        user: { id: res.data.user.id, email: res.data.user.email, role: res.data.user.roles[0] || role },
-        token: res.data.token
-      }));
+      // 1. Create/Update Profile
+      await API.post('/profile/customer', {
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        email: email.trim() || null
+      });
 
-      // Move to next step for profile completion
-      setStep(2);
+      const defaultCityId = cities[0]?.id || 'ccc11111-1111-4111-8111-111111111111';
+      const defaultAreaId = getAreasByCity(defaultCityId)[0]?.id || 'aaa11111-1111-4111-8111-111111111111';
+
+      // 2. Add Address
+      await API.post('/addresses', {
+        address_line1: addressLine1.trim(),
+        city_id: defaultCityId,
+        area_id: defaultAreaId,
+        latitude,
+        longitude
+      });
+
+      toast.success('Registration completed successfully!');
+      navigate(redirectPath);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Registration failed. Try again.');
+      setError(err.response?.data?.error || 'Failed to complete profile. Please try again.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleGoogleLoginSuccess = async (credentialResponse: any) => {
-    setLoading(true);
-    setError('');
-    try {
-      const res = await API.post('/auth/google-login', { credential: credentialResponse.credential });
-      dispatch(loginSuccess({
-        user: { id: res.data.user.id, email: res.data.user.email, phone: res.data.user.phone, role: res.data.user.roles[0] || 'customer' },
-        token: res.data.token
-      }));
-      // Google user is logged in immediately, they can edit profile later via dashboard
-      navigate('/');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Google login failed.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleLoginError = () => {
-    setError('Google Registration Failed');
-  };
-
-  const handleStep2 = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    try {
-      if (role === 'customer') {
-        await API.post('/profile/customer', {
-          first_name: firstName,
-          last_name: lastName,
-          address_line1: addressLine1,
-          city_id: cityId,
-          area_id: areaId,
-        });
-      } else {
-        const providerRes = await API.post('/profile/provider', {
-          first_name: firstName,
-          last_name: lastName,
-          company_name: companyName,
-          phone, 
-          email,
-          service_ids: serviceIds.length > 0 ? serviceIds : ['fff11111-1111-4111-8111-111111111111'], // Fallback if none selected
-        });
-
-        if (documents.length > 0) {
-          const formData = new FormData();
-          formData.append('document_type', 'Verification Documents');
-          
-          documents.forEach(doc => {
-            formData.append('documents', doc);
-          });
-          
-          await API.post(`/profile/provider/${providerRes.data.profileId}/documents`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          });
-        }
-      }
-      navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to create profile. Try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleServiceToggle = (id: string) => {
-    setServiceIds(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]);
-  };
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let val = e.target.value;
-    if (!val.startsWith('+92')) {
-      val = '+92';
-    }
-    const numbersOnly = val.slice(3).replace(/\D/g, '');
-    val = '+92' + numbersOnly;
-
-    if (val.length <= 13) {
-      setPhone(val);
     }
   };
 
   return (
-    <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
     <div className="flex items-center justify-center min-h-[85vh] bg-gray-50 py-10">
-      <Card className="w-full max-w-lg p-8">
+      <Card className="w-full max-w-2xl p-8">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-[#00674F] mb-2">
-            {step === 1 ? 'Create Account' : 'Complete Profile'}
-          </h2>
-          <p className="text-[#878787]">
-            {step === 1 ? 'Join Murammat today' : 'Tell us a bit more about yourself'}
-          </p>
+          <h2 className="text-3xl font-bold text-[#00674F] mb-2">Complete Profile</h2>
+          <p className="text-[#878787]">Tell us a bit more about yourself to set up your account</p>
         </div>
 
         {error && (
@@ -173,114 +234,59 @@ export default function Register() {
           </div>
         )}
 
-        {step === 1 ? (
-          <form onSubmit={handleStep1} className="flex flex-col gap-4 animate-fade-in">
-            <Input label="Phone Number" type="tel" required value={phone} onChange={handlePhoneChange} placeholder="+923001234567" />
-            <Input label="Email Address (Optional)" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <Input label="Password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-            
-            <div className="flex flex-col gap-1 mb-2">
-              <label className="text-sm font-semibold text-[#878787]">I am a...</label>
-              <div className="flex gap-4 mt-1">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" value="customer" checked={role === 'customer'} onChange={() => setRole('customer')} className="text-[#00674F] focus:ring-[#00674F]" />
-                  Customer
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" value="provider" checked={role === 'provider'} onChange={() => setRole('provider')} className="text-[#00674F] focus:ring-[#00674F]" />
-                  Service Provider (For Technician Only )
-                </label>
-              </div>
-            </div>
-            
-            <Button type="submit" className="w-full text-lg mt-4" isLoading={loading}>Continue</Button>
-          </form>
-        ) : (
-          <form onSubmit={handleStep2} className="flex flex-col gap-4 animate-slide-up">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          {/* Personal Information */}
+          <div className="flex flex-col gap-4">
+            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Personal Information</h3>
             <div className="grid grid-cols-2 gap-4">
-               <Input label="First Name" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-               <Input label="Last Name" required value={lastName} onChange={(e) => setLastName(e.target.value)} />
+              <Input label="First Name" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+              <Input label="Last Name" required value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            </div>
+            <Input label="Email Address (Optional)" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
+
+          {/* Address & Location */}
+          <div className="flex flex-col gap-4">
+            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Address & Location</h3>
+            <Input label="Address Details" required value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} placeholder="House #, Street name" />
+          </div>
+
+          {/* Map Location Picker */}
+          <div className="flex flex-col gap-3">
+            <label className="text-sm font-semibold text-[#878787]">Pin Exact Location on Map</label>
+            
+            {/* Search Location Bar */}
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                placeholder="Search location on map..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-[#00674F] h-10"
+              />
+              <Button type="button" onClick={handleSearchLocation} className="h-10 px-4">Search</Button>
             </div>
 
-            {role === 'customer' && (
-               <>
-                 <Input label="Address" required value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} />
-                 <div className="grid grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-1">
-                      <label className="text-sm font-semibold text-[#878787]">City</label>
-                      <select required value={cityId} onChange={(e) => setCityId(e.target.value)} className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-[#00674F]">
-                        <option value="">Select City</option>
-                        {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                      </select>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-sm font-semibold text-[#878787]">Area</label>
-                      <select required value={areaId} onChange={(e) => setAreaId(e.target.value)} className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-[#00674F]">
-                        <option value="">Select Area</option>
-                        {getAreasByCity(cityId).map((a: any) => <option key={a.id} value={a.id}>{a.name}</option>)}
-                      </select>
-                    </div>
-                 </div>
-               </>
-            )}
-
-            {role === 'provider' && (
-               <>
-                 <Input label="Company Name" required value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
-                 <div className="flex flex-col gap-1 mt-2">
-                    <label className="text-sm font-semibold text-[#878787]">Select Your Services</label>
-                    <div className="grid grid-cols-2 gap-2 mt-2 max-h-40 overflow-y-auto p-2 border rounded-lg">
-                      {services.length === 0 ? <p className="text-xs text-gray-500">Loading services...</p> : null}
-                      {services.map(s => (
-                        <label key={s.id} className="text-sm flex items-center gap-2">
-                           <input type="checkbox" checked={serviceIds.includes(s.id)} onChange={() => handleServiceToggle(s.id)} className="text-[#00674F] focus:ring-[#00674F]" />
-                           {s.name}
-                        </label>
-                      ))}
-                    </div>
-                 </div>
-
-                 <div className="flex flex-col gap-1 mt-2">
-                    <label className="text-sm font-semibold text-[#878787]">Upload Documents (CNIC/Licenses)</label>
-                    <input 
-                      type="file" 
-                      multiple 
-                      onChange={(e) => setDocuments(Array.from(e.target.files || []))}
-                      className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-[#00674F]" 
-                      title="Upload identity and professional documents"
-                    />
-                    <p className="text-xs text-gray-400">You can select multiple files.</p>
-                 </div>
-               </>
-            )}
-            
-            <Button type="submit" className="w-full text-lg mt-4" isLoading={loading}>Complete Registration</Button>
-          </form>
-        )}
-
-        {step === 1 && (
-          <div className="mt-6 flex flex-col items-center justify-center gap-4">
-            <div className="flex items-center gap-2 w-full">
-              <div className="flex-1 h-px bg-gray-200"></div>
-              <span className="text-gray-400 text-sm">OR</span>
-              <div className="flex-1 h-px bg-gray-200"></div>
-            </div>
-            
-            <GoogleLogin
-              onSuccess={handleGoogleLoginSuccess}
-              onError={handleGoogleLoginError}
-              useOneTap
+            {/* Map Container */}
+            <div 
+              ref={mapRef} 
+              className="w-full h-64 rounded-xl border border-gray-300 overflow-hidden shadow-inner bg-gray-100" 
             />
 
-            <div className="mt-2 text-center">
-              <p className="text-sm text-[#878787]">
-                Already have an account? <span className="text-[#00674F] font-semibold cursor-pointer hover:underline" onClick={() => navigate('/login')}>Sign in</span>
-              </p>
-            </div>
+            {/* Current Location Button */}
+            <Button 
+              type="button" 
+              onClick={handleCurrentLocation} 
+              variant="outline" 
+              className="w-full flex items-center justify-center gap-2 border-dashed border-[#00674F] text-[#00674F] hover:bg-[#00674F]/5 h-10"
+            >
+              {isLocating ? 'Locating...' : '📍 Use Current Location'}
+            </Button>
           </div>
-        )}
+
+          <Button type="submit" className="w-full text-lg mt-4" isLoading={loading}>Complete Registration</Button>
+        </form>
       </Card>
     </div>
-    </GoogleOAuthProvider>
   );
 }

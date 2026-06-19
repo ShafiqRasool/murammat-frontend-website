@@ -1,4 +1,5 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import LandingPage from './pages/LandingPage';
 import ServiceDetails from './pages/ServiceDetails';
 import Login from './pages/Login';
@@ -15,17 +16,29 @@ import WhyMurammat from './pages/WhyMurammat';
 import Blogs from './pages/Blogs';
 import BlogDetails from './pages/BlogDetails';
 import TrackOrder from './pages/TrackOrder';
+import Contact from './pages/Contact';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 
 function App() {
   return (
     <div className="flex flex-col min-h-screen">
+      <ScrollToTop />
       <Navbar />
       <div className="flex-grow">
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/my-profile" element={<Dashboard />} />
           <Route path="/profile" element={<EditProfile />} />
           <Route path="/category/:id" element={<CategoryServices />} />
           <Route path="/services/:id" element={<ServiceDetails />} />
@@ -36,6 +49,7 @@ function App() {
           <Route path="/blog" element={<Blogs />} />
           <Route path="/blog/:id" element={<BlogDetails />} />
           <Route path="/track-order" element={<TrackOrder />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </div>
       <Footer />

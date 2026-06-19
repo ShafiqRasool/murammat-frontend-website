@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
@@ -6,6 +6,27 @@ import { loginSuccess } from '../store/authSlice';
 import API from '../utils/api';
 import toast, { Toaster } from 'react-hot-toast';
 import { Edit2, Minus, Plus, ImagePlus, X, MapPin } from 'lucide-react';
+
+const loadGoogleMapsScript = (callback: () => void) => {
+  if ((window as any).google) {
+    callback();
+    return;
+  }
+  const existingScript = document.getElementById('googleMapsScript');
+  if (!existingScript) {
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBKXixSZWYE5MqJlysVTO_rmi4Y-L_lFN8&libraries=places`;
+    script.id = 'googleMapsScript';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+    script.onload = () => {
+      if (callback) callback();
+    };
+  } else {
+    existingScript.addEventListener('load', callback);
+  }
+};
 
 export default function Checkout() {
   const { service_id } = useParams<{ service_id: string }>();
@@ -44,12 +65,192 @@ export default function Checkout() {
   const [addressLine, setAddressLine] = useState('');
 
   // Completed Address to display
-  const [savedAddress, setSavedAddress] = useState<{cityId: string, areaId: string, line: string, displayArea: string} | null>(null);
+  const [savedAddress, setSavedAddress] = useState<{
+    cityId: string;
+    areaId: string;
+    line: string;
+    displayArea: string;
+    latitude?: number | null;
+    longitude?: number | null;
+  } | null>(null);
+
+  // Google Maps Picker States inside Modal
+  const modalMapRef = useRef<HTMLDivElement>(null);
+  const [modalMap, setModalMap] = useState<any>(null);
+  const [modalMarker, setModalMarker] = useState<any>(null);
+  const [modalLatitude, setModalLatitude] = useState<number | null>(31.5204);
+  const [modalLongitude, setModalLongitude] = useState<number | null>(74.3587);
+  const [modalSearchQuery, setModalSearchQuery] = useState('');
+  const [modalIsLocating, setModalIsLocating] = useState(false);
 
   useEffect(() => {
+    if (!showAddressModal) return;
+
+    const timer = setTimeout(() => {
+      loadGoogleMapsScript(() => {
+        if (!modalMapRef.current) return;
+        const google = (window as any).google;
+        const initialLocation = { lat: modalLatitude || 31.5204, lng: modalLongitude || 74.3587 };
+
+        const newMap = new google.maps.Map(modalMapRef.current, {
+          center: initialLocation,
+          zoom: 14,
+          disableDefaultUI: true,
+          zoomControl: true,
+        });
+
+        const newMarker = new google.maps.Marker({
+          position: initialLocation,
+          map: newMap,
+          draggable: true,
+        });
+
+        setModalMap(newMap);
+        setModalMarker(newMarker);
+
+        newMarker.addListener('dragend', () => {
+          const pos = newMarker.getPosition();
+          if (pos) {
+            const lat = pos.lat();
+            const lng = pos.lng();
+            setModalLatitude(lat);
+            setModalLongitude(lng);
+            reverseGeocode(lat, lng);
+          }
+        });
+
+        newMap.addListener('click', (e: any) => {
+          const pos = e.latLng;
+          if (pos) {
+            newMarker.setPosition(pos);
+            const lat = pos.lat();
+            const lng = pos.lng();
+            setModalLatitude(lat);
+            setModalLongitude(lng);
+            reverseGeocode(lat, lng);
+          }
+        });
+      });
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [showAddressModal]);
+
+  const reverseGeocode = async (lat: number, lng: number) => {
+    try {
+      const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBKXixSZWYE5MqJlysVTO_rmi4Y-L_lFN8`);
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        const address = data.results[0].formatted_address;
+        setAddressLine(address);
+      }
+    } catch (err) {
+      console.error('Error reverse geocoding:', err);
+    }
+  };
+
+  const handleSearchLocation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!modalSearchQuery.trim()) return;
+
+    try {
+      const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(modalSearchQuery)}&key=AIzaSyBKXixSZWYE5MqJlysVTO_rmi4Y-L_lFN8`);
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        const loc = data.results[0].geometry.location;
+        const address = data.results[0].formatted_address;
+        
+        setModalLatitude(loc.lat);
+        setModalLongitude(loc.lng);
+        setAddressLine(address);
+
+        if (modalMap && modalMarker) {
+          const google = (window as any).google;
+          const pos = new google.maps.LatLng(loc.lat, loc.lng);
+          modalMap.setCenter(pos);
+          modalMarker.setPosition(pos);
+        }
+      } else {
+        toast.error('Location not found');
+      }
+    } catch (err) {
+      console.error('Error searching location:', err);
+      toast.error('Search failed');
+    }
+  };
+
+  const handleCurrentLocation = () => {
+    if (navigator.geolocation) {
+      setModalIsLocating(true);
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setModalIsLocating(false);
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          setModalLatitude(lat);
+          setModalLongitude(lng);
+
+          if (modalMap && modalMarker) {
+            const google = (window as any).google;
+            const pos = new google.maps.LatLng(lat, lng);
+            modalMap.setCenter(pos);
+            modalMarker.setPosition(pos);
+          }
+          reverseGeocode(lat, lng);
+        },
+        (err) => {
+          setModalIsLocating(false);
+          toast.error('Error getting location: ' + err.message);
+        }
+      );
+    } else {
+      toast.error('Geolocation is not supported by your browser.');
+    }
+  };
+
+  useEffect(() => {
+    if (!token) {
+      toast.error('Please login to continue.');
+      navigate(`/login?redirect=/checkout/${service_id}`);
+      return;
+    }
+
     const initData = async () => {
       try {
         setLoading(true);
+        // Fetch profile to get phone number
+        try {
+          const pRes = await API.get('/profile/customer');
+          if (pRes.data && pRes.data.phone) {
+            setPhone(pRes.data.phone);
+            setIsEditingPhone(false);
+          }
+        } catch (err) {
+          console.error('Failed to load customer profile', err);
+        }
+
+        // Fetch saved addresses
+        try {
+          const addrRes = await API.get('/addresses');
+          if (addrRes.data && addrRes.data.length > 0) {
+            const defaultAddr = addrRes.data.find((a: any) => a.is_default) || addrRes.data[0];
+            if (defaultAddr) {
+              setSavedAddress({
+                cityId: defaultAddr.city_id,
+                areaId: defaultAddr.area_id,
+                line: defaultAddr.address_line1,
+                displayArea: defaultAddr.area_name,
+                latitude: defaultAddr.latitude ? parseFloat(defaultAddr.latitude) : null,
+                longitude: defaultAddr.longitude ? parseFloat(defaultAddr.longitude) : null
+              });
+              if (defaultAddr.latitude) setModalLatitude(parseFloat(defaultAddr.latitude));
+              if (defaultAddr.longitude) setModalLongitude(parseFloat(defaultAddr.longitude));
+            }
+          }
+        } catch (err) {
+          console.error('Failed to load addresses', err);
+        }
+
         // Fetch Service
         const sRes = await API.get('/public/services');
         const found = sRes.data.find((s: any) => s.id === service_id);
@@ -128,16 +329,20 @@ export default function Checkout() {
   };
 
   const handleSaveAddress = () => {
-    if (!selectedAreaId || !addressLine) {
-      toast.error('Area and Address Details are required!');
+    if (!addressLine.trim()) {
+      toast.error('Address Details are required!');
       return;
     }
-    const areaObj = areas.find(a => a.id === selectedAreaId);
+    const defaultCityId = cities[0]?.id || 'ccc11111-1111-4111-8111-111111111111';
+    const defaultAreaId = areas[0]?.id || 'aaa11111-1111-4111-8111-111111111111';
+
     setSavedAddress({
-      cityId: selectedCityId,
-      areaId: selectedAreaId,
-      line: addressLine,
-      displayArea: areaObj ? areaObj.name : ''
+      cityId: defaultCityId,
+      areaId: defaultAreaId,
+      line: addressLine.trim(),
+      displayArea: '',
+      latitude: modalLatitude,
+      longitude: modalLongitude
     });
     setShowAddressModal(false);
     toast.success('Address submitted', { style: { background: '#00674F', color: '#fff' } });
@@ -191,7 +396,9 @@ export default function Checkout() {
         address: {
           city_id: savedAddress.cityId,
           area_id: savedAddress.areaId,
-          address_line1: savedAddress.line
+          address_line1: savedAddress.line,
+          latitude: savedAddress.latitude,
+          longitude: savedAddress.longitude
         },
         phone_number: phone,
         problem_message: problemMessage,
@@ -209,7 +416,7 @@ export default function Checkout() {
       toast.success(
         <div>
           <p className="font-bold mb-1">Booking confirmed!</p>
-          <p className="text-sm">Your Tracking ID is <strong>{res.data.booking_id}</strong>. You can view it in your dashboard.</p>
+          <p className="text-sm">Your Tracking ID is <strong>{res.data.booking_id}</strong>. You can view it in My Profile.</p>
         </div>, 
         {
           duration: 6000,
@@ -217,7 +424,7 @@ export default function Checkout() {
         }
       );
       setTimeout(() => {
-        navigate('/dashboard');
+        navigate('/my-profile');
       }, 4000);
 
     } catch (error: any) {
@@ -472,13 +679,13 @@ export default function Checkout() {
       {/* ADDRESS MODAL */}
       {showAddressModal && (
         <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl w-full max-w-md p-7 shadow-2xl animate-slide-up border border-gray-100">
+          <div className="bg-white rounded-3xl w-full max-w-lg p-7 shadow-2xl animate-slide-up border border-gray-100 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-extrabold text-gray-900 flex items-center gap-2">
                 <div className="w-10 h-10 bg-[#00674F]/10 rounded-full flex items-center justify-center">
                   <MapPin className="text-[#00674F]" size={20} />
                 </div>
-                Add Address
+                Edit Address
               </h3>
               <button 
                 onClick={() => setShowAddressModal(false)} 
@@ -488,31 +695,7 @@ export default function Checkout() {
               </button>
             </div>
             
-            <div className="space-y-5">
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5 ml-1">City</label>
-                <select 
-                  className="w-full border-2 border-gray-100 rounded-xl p-3.5 outline-none bg-gray-100 text-gray-500 font-semibold cursor-not-allowed appearance-none"
-                  value={selectedCityId} 
-                  onChange={e => setSelectedCityId(e.target.value)}
-                  disabled
-                >
-                  {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5 ml-1">Area <span className="text-red-500">*</span></label>
-                <select 
-                  className="w-full border-2 border-gray-200 rounded-xl p-3.5 outline-none focus:border-[#00674F] focus:ring-4 focus:ring-[#00674F]/10 transition-all font-medium text-gray-800 appearance-none bg-white"
-                  value={selectedAreaId} 
-                  onChange={e => setSelectedAreaId(e.target.value)}
-                >
-                  <option value="" disabled>Select your Area</option>
-                  {areas.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-                </select>
-              </div>
-
+            <div className="space-y-4">
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1.5 ml-1">Address Details <span className="text-red-500">*</span></label>
                 <input 
@@ -523,9 +706,47 @@ export default function Checkout() {
                   onChange={e => setAddressLine(e.target.value)}
                 />
               </div>
+
+              {/* Map Location Picker */}
+              <div className="flex flex-col gap-3">
+                <label className="text-sm font-bold text-gray-700 ml-1">Pin Exact Location on Map</label>
+                
+                {/* Search Location Bar */}
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    placeholder="Search location on map..." 
+                    value={modalSearchQuery}
+                    onChange={(e) => setModalSearchQuery(e.target.value)}
+                    className="flex-1 px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-[#00674F] h-10 text-sm"
+                  />
+                  <button 
+                    type="button" 
+                    onClick={handleSearchLocation} 
+                    className="h-10 px-4 bg-[#00674F] text-white font-bold rounded-xl text-sm"
+                  >
+                    Search
+                  </button>
+                </div>
+
+                {/* Map Container */}
+                <div 
+                  ref={modalMapRef} 
+                  className="w-full h-56 rounded-xl border border-gray-200 overflow-hidden shadow-inner bg-gray-100" 
+                />
+
+                {/* Current Location Button */}
+                <button 
+                  type="button" 
+                  onClick={handleCurrentLocation} 
+                  className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-[#00674F] text-[#00674F] hover:bg-[#00674F]/5 h-10 rounded-xl font-bold text-sm"
+                >
+                  {modalIsLocating ? 'Locating...' : '📍 Use Current Location'}
+                </button>
+              </div>
             </div>
 
-            <div className="mt-8">
+            <div className="mt-6">
               <button 
                 onClick={handleSaveAddress}
                 className="w-full bg-[#00674F] hover:bg-[#00523f] text-white font-extrabold text-lg py-4 rounded-xl transition-all shadow-[0_8px_20px_rgba(0,103,79,0.2)] active:scale-95 active:shadow-md"

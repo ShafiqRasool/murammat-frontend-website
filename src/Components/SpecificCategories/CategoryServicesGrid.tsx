@@ -69,7 +69,7 @@ const CategoryServicesGrid: React.FC<CategoryServicesGridProps> = ({ parentId })
           {loading ? (
             Array.from({ length: 6 }).map((_, idx) => (
               <div key={idx} className="animate-pulse flex flex-col items-center p-4">
-                <div className="w-20 h-20 bg-gray-200 rounded-full mb-4"></div>
+                <div className="w-20 h-20 bg-gray-100 rounded-xl mb-4"></div>
                 <div className="h-4 bg-gray-200 w-24 rounded"></div>
               </div>
             ))
@@ -88,7 +88,7 @@ const CategoryServicesGrid: React.FC<CategoryServicesGridProps> = ({ parentId })
                   <img 
                     src={getImageUrl(subCat.image_url)} 
                     alt={subCat.name} 
-                    className="w-full h-full object-cover rounded-full shadow-sm" 
+                    className="w-full h-full object-contain" 
                   />
                 </div>
                 

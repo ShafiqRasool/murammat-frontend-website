@@ -14,6 +14,7 @@ interface SubCategory {
   id: string;
   name: string;
   parent_category_id: string;
+  image_url?: string;
 }
 
 interface MainCategoriesProps {
@@ -56,6 +57,14 @@ const MainCategories: React.FC<MainCategoriesProps> = ({ parentId, onBack }) => 
     return applianceRepairImg; // Fallback
   };
 
+  const getImageUrl = (url?: string, name?: string) => {
+    if (!url) return getCategoryImage(name || '');
+    if (url.startsWith('http')) return url;
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+    const baseUrl = apiUrl.replace('/api', '');
+    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
   return (
     <section className="w-full bg-[#FAFAFA] py-16 px-4 sm:px-6 lg:px-8 border-t border-gray-100">
       <div className="max-w-7xl mx-auto">
@@ -86,7 +95,7 @@ const MainCategories: React.FC<MainCategoriesProps> = ({ parentId, onBack }) => 
         <div className="flex flex-wrap justify-center gap-4 md:gap-6">
           {loading ? (
             Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="animate-pulse w-[140px] sm:w-[180px] md:w-[220px] lg:flex-1 min-w-[160px] max-w-[240px] h-[160px] bg-gray-200 rounded-xl"></div>
+              <div key={i} className="animate-pulse w-[150px] sm:w-[190px] md:w-[230px] lg:flex-1 min-w-[170px] max-w-[240px] h-[220px] bg-gray-200 rounded-2xl"></div>
             ))
           ) : subCategories.length === 0 ? (
             <div className="text-center text-gray-500 py-8 w-full">
@@ -97,19 +106,23 @@ const MainCategories: React.FC<MainCategoriesProps> = ({ parentId, onBack }) => 
               <div 
                 key={category.id} 
                 onClick={() => navigate('/specific-categories', { state: { categoryName: category.name } })}
-                className="w-[140px] sm:w-[180px] md:w-[220px] lg:flex-1 min-w-[160px] max-w-[240px] bg-white border border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,103,79,0.12)] hover:-translate-y-1 hover:border-[#00674F]/30 group"
+                className="w-[150px] sm:w-[190px] md:w-[230px] lg:flex-1 min-w-[170px] max-w-[240px] bg-white border border-gray-200 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,103,79,0.15)] hover:-translate-y-2 hover:border-[#00674F]/40 group flex flex-col"
               >
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mb-4 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                {/* Square Image Container */}
+                <div className="w-full aspect-square overflow-hidden bg-gray-50 relative">
                   <img 
-                    src={getCategoryImage(category.name)} 
+                    src={getImageUrl(category.image_url, category.name)} 
                     alt={category.name} 
-                    className="w-full h-full object-cover rounded-full shadow-md"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 
-                <h3 className="text-sm sm:text-base font-semibold text-gray-800 group-hover:text-[#00674F] transition-colors">
-                  {category.name}
-                </h3>
+                <div className="p-4 flex-grow flex items-center justify-center min-h-[60px] bg-white">
+                  <h3 className="text-sm sm:text-base font-bold text-gray-800 group-hover:text-[#00674F] transition-colors line-clamp-2">
+                    {category.name}
+                  </h3>
+                </div>
               </div>
             ))
           )}
