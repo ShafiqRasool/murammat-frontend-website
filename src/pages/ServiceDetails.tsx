@@ -34,8 +34,8 @@ export default function ServiceDetails() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen bg-gradient-to-br from-white via-slate-50 to-emerald-50/30 flex items-center justify-center">
-        <div className="p-20 text-center animate-pulse text-[#00674F] font-bold text-lg">
+      <div className="w-full min-h-screen bg-gradient-to-br from-[#012218] via-[#003B2D] to-[#012218] flex items-center justify-center">
+        <div className="p-20 text-center animate-pulse text-[#00ffc4] font-bold text-lg">
           Loading Service Details...
         </div>
       </div>
@@ -43,7 +43,7 @@ export default function ServiceDetails() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-white via-slate-50 to-emerald-50/30 text-gray-800 flex flex-col antialiased relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
+    <div className="w-full min-h-screen bg-gradient-to-br from-[#012218] via-[#003B2D] to-[#012218] text-gray-800 flex flex-col antialiased relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
       <style>{`
         @keyframes float-detail-blob {
           0%, 100% { transform: translate3d(0px, 0px, 0) scale(1); }
@@ -63,13 +63,13 @@ export default function ServiceDetails() {
         }
       `}</style>
 
-      {/* Drifting gradient blur background elements (Light Theme) */}
-      <div className="absolute top-[10%] left-[-5%] w-[400px] h-[400px] bg-emerald-500/5 rounded-full blur-3xl pointer-events-none z-0 animate-detail-blob"></div>
+      {/* Drifting gradient blur background elements */}
+      <div className="absolute top-[10%] left-[-5%] w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none z-0 animate-detail-blob"></div>
       <div className="absolute bottom-[10%] right-[-5%] w-[450px] h-[450px] bg-yellow-500/5 rounded-full blur-3xl pointer-events-none z-0 animate-detail-blob-2"></div>
       <div className="absolute top-[45%] right-[20%] w-[300px] h-[300px] bg-[#00ffc4]/5 rounded-full blur-3xl pointer-events-none z-0 animate-detail-blob"></div>
 
-      {/* Abstract Glowing Fluid Wave Line (Subtle opacity for light theme) */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-[0.05]">
+      {/* Abstract Glowing Fluid Wave Line */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-[0.14]">
         <svg className="w-full h-full min-h-[800px]" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
           <path d="M-100 400 C 300 200, 700 600, 1100 300 C 1300 150, 1500 230, 1600 250" stroke="url(#details-wave-gradient)" strokeWidth="3" strokeLinecap="round" />
           <path d="M-50 470 C 350 300, 650 670, 1050 370 C 1250 230, 1450 300, 1550 320" stroke="url(#details-wave-gradient)" strokeWidth="1.5" strokeOpacity="0.5" strokeLinecap="round" />
@@ -85,24 +85,24 @@ export default function ServiceDetails() {
 
       <div className="max-w-5xl mx-auto w-full relative z-10">
         
-        {/* Back Navigation Button */}
+        {/* Back Navigation Button (Glass style matching dark background) */}
         <button 
           onClick={() => navigate(-1)} 
-          className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-200 text-[#00674F] font-bold text-xs shadow-sm transition-all duration-300 group hover:-translate-y-0.5"
+          className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-[#00ffc4]/15 border border-white/10 hover:border-[#00ffc4]/30 text-emerald-100 hover:text-white transition-all duration-300 shadow-sm group hover:-translate-y-0.5"
         >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          <span>BACK TO SERVICES</span>
+          <span className="text-xs font-bold uppercase tracking-wider">Back to Services</span>
         </button>
 
         {service ? (
-          /* Main Crisp White Glassmorphic Card */
-          <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-150 p-6 md:p-10 relative overflow-hidden flex flex-col md:flex-row gap-8 md:gap-12 items-stretch">
+          /* Crisp White Glassmorphic Card (Pops out beautifully on dark background) */
+          <div className="bg-white/95 backdrop-blur-lg rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 p-6 md:p-10 relative overflow-hidden flex flex-col md:flex-row gap-8 md:gap-12 items-stretch">
             {/* Colorful top brand gradient line */}
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#00ffc4] via-[#00674F] to-yellow-400"></div>
 
             {/* Left Column: Visual Cover & Verification */}
             <div className="w-full md:w-1/2 flex flex-col gap-4">
-              <div className="w-full rounded-2xl overflow-hidden border border-gray-100 shadow-md relative group/img aspect-[4/3] md:aspect-square">
+              <div className="w-full rounded-2xl overflow-hidden border border-gray-200/60 shadow-md relative group/img aspect-[4/3] md:aspect-square">
                 <img 
                   src={getImageUrl(service.image_url)} 
                   alt={service.name} 
@@ -160,15 +160,15 @@ export default function ServiceDetails() {
                 {/* Included / Not Included Lists Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                   {/* Included Card */}
-                  <div className="bg-emerald-50/50 border border-emerald-100 p-4 rounded-xl space-y-2.5">
-                    <h3 className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 uppercase tracking-wider border-b border-emerald-100 pb-1.5">
+                  <div className="bg-emerald-50/60 border border-emerald-100 p-4 rounded-xl space-y-2.5 shadow-sm">
+                    <h3 className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 uppercase tracking-wider border-b border-emerald-100/80 pb-1.5">
                       <Check size={14} className="text-[#00674F] stroke-[2.5]" />
                       Included
                     </h3>
                     {service.includes?.length > 0 ? (
                       <ul className="space-y-1">
                         {service.includes.map((item: string, i: number) => (
-                          <li key={i} className="flex items-start gap-1.5 text-xs text-emerald-700 leading-snug">
+                          <li key={i} className="flex items-start gap-1.5 text-xs text-emerald-700 leading-snug font-medium">
                             <span className="text-[#00674F] font-bold mt-0.5">•</span>
                             <span>{item}</span>
                           </li>
@@ -180,15 +180,15 @@ export default function ServiceDetails() {
                   </div>
 
                   {/* Not Included Card */}
-                  <div className="bg-red-50/50 border border-red-100 p-4 rounded-xl space-y-2.5">
-                    <h3 className="flex items-center gap-1.5 text-xs font-bold text-red-800 uppercase tracking-wider border-b border-red-100 pb-1.5">
+                  <div className="bg-red-50/60 border border-red-100 p-4 rounded-xl space-y-2.5 shadow-sm">
+                    <h3 className="flex items-center gap-1.5 text-xs font-bold text-red-800 uppercase tracking-wider border-b border-red-100/80 pb-1.5">
                       <X size={14} className="text-red-500 stroke-[2.5]" />
                       Not Included
                     </h3>
                     {service.not_includes?.length > 0 ? (
                       <ul className="space-y-1">
                         {service.not_includes.map((item: string, i: number) => (
-                          <li key={i} className="flex items-start gap-1.5 text-xs text-red-700 leading-snug">
+                          <li key={i} className="flex items-start gap-1.5 text-xs text-red-700 leading-snug font-medium">
                             <span className="text-red-500 font-bold mt-0.5">•</span>
                             <span>{item}</span>
                           </li>
