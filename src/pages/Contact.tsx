@@ -83,125 +83,180 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gray-50 flex flex-col antialiased">
+    <div className="w-full min-h-screen bg-gradient-to-br from-[#012218] via-[#003B2D] to-[#012218] text-white flex flex-col antialiased relative overflow-hidden">
+      <style>{`
+        @keyframes float-blob-contact {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          50% { transform: translate(-25px, 25px) scale(1.06); }
+        }
+        @keyframes float-blob-contact-2 {
+          0%, 100% { transform: translate(0px, 0px) scale(1.05); }
+          50% { transform: translate(30px, -20px) scale(0.95); }
+        }
+        @keyframes text-shimmer {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animate-float-contact {
+          animation: float-blob-contact 12s ease-in-out infinite;
+        }
+        .animate-float-contact-2 {
+          animation: float-blob-contact-2 15s ease-in-out infinite;
+        }
+        .animate-text-shimmer {
+          background-size: 200% auto;
+          animation: text-shimmer 6s linear infinite;
+        }
+      `}</style>
+
+      {/* Drifting gradient blur background elements */}
+      <div className="absolute top-[10%] left-[-5%] w-[450px] h-[450px] bg-[#009b77]/10 rounded-full blur-3xl pointer-events-none z-0 animate-float-contact"></div>
+      <div className="absolute bottom-[10%] right-[-5%] w-[500px] h-[500px] bg-yellow-500/5 rounded-full blur-3xl pointer-events-none z-0 animate-float-contact-2"></div>
+      <div className="absolute top-[40%] right-[25%] w-[320px] h-[320px] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none z-0 animate-float-contact"></div>
+
+      {/* Abstract Glowing Fluid Wave Line */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-[0.14]">
+        <svg className="w-full h-full min-h-[900px]" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path d="M-100 400 C 300 200, 700 600, 1100 300 C 1300 150, 1500 230, 1600 250" stroke="url(#contact-wave-gradient)" strokeWidth="3" strokeLinecap="round" />
+          <path d="M-50 470 C 350 300, 650 670, 1050 370 C 1250 230, 1450 300, 1550 320" stroke="url(#contact-wave-gradient)" strokeWidth="1.5" strokeOpacity="0.5" strokeLinecap="round" />
+          <defs>
+            <linearGradient id="contact-wave-gradient" x1="0" y1="0" x2="1440" y2="900" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#00ffc4" />
+              <stop offset="0.5" stopColor="#00674F" />
+              <stop offset="1" stopColor="rgba(234, 179, 8, 0.6)" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-[#00674F] to-[#004D3B] text-white py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.08),transparent)] pointer-events-none"></div>
-        <div className="max-w-7xl mx-auto text-center relative z-10 space-y-4">
-          <span className="bg-white/10 text-white font-semibold text-xs px-3.5 py-1.5 rounded-full uppercase tracking-wider">Contact Us</span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">Get in Touch with Murammat.pk</h1>
-          <p className="text-sm sm:text-base text-gray-200 max-w-2xl mx-auto leading-relaxed">
-            Have questions, service inquiries, or complaints? Our dedicated team is here to assist you. Fill out the form or reach us through any of our channels below.
-          </p>
-        </div>
+      <section className="pt-24 pb-12 px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-4">
+        <span className="inline-flex items-center gap-2 bg-[#00674F]/40 text-[#00ffc4] border border-[#009b77]/30 font-extrabold text-[10px] px-4 py-1.5 rounded-full uppercase tracking-wider shadow-inner">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#00ffc4] animate-pulse"></span>
+          Contact Support
+        </span>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
+          Get in Touch with{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ffc4] via-[#009b77] to-yellow-300 animate-text-shimmer">
+            Murammat.pk
+          </span>
+        </h1>
+        <p className="text-sm sm:text-base text-emerald-100/70 max-w-2xl mx-auto leading-relaxed">
+          Have questions, service inquiries, or complaints? Our dedicated team is here to assist you. Fill out the form or reach us through any of our channels below.
+        </p>
       </section>
 
       {/* Main Grid Content */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 relative z-10">
         
         {/* Left Side: Contact Information & Cards */}
-        <div className="lg:col-span-5 space-y-8">
+        <div className="lg:col-span-5 space-y-8 relative z-10">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-3">Contact Information</h2>
-            <p className="text-sm text-gray-600 leading-relaxed">
+            <div className="inline-flex items-center gap-2 text-xs font-bold text-[#00ffc4] uppercase tracking-wider mb-2">
+              <span className="w-6 h-0.5 bg-[#00ffc4]"></span>
+              Direct Helpline
+            </div>
+            <h2 className="text-2xl font-extrabold text-white tracking-tight mb-3">Contact Information</h2>
+            <p className="text-sm text-emerald-100/70 leading-relaxed">
               We respond to inquiries as quickly as possible. Reach out directly or visit us at our offices.
             </p>
           </div>
 
           <div className="grid grid-cols-1 gap-5">
             {/* Phone Card */}
-            <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow">
-              <div className="p-3 bg-[#00674F]/10 rounded-lg text-[#00674F]">
+            <div className="bg-slate-900/40 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-[0_4px_25px_rgba(0,0,0,0.2)] flex items-start gap-4 hover:shadow-[0_8px_30px_rgba(0,255,196,0.05)] hover:border-[#00ffc4]/30 hover:-translate-y-0.5 transition-all duration-300 group">
+              <div className="p-3 bg-[#00ffc4]/10 rounded-xl text-[#00ffc4] group-hover:bg-[#00ffc4] group-hover:text-[#012218] transition-all duration-300 shadow-sm">
                 <Phone size={22} />
               </div>
               <div className="space-y-1">
-                <p className="text-xs font-semibold text-[#00674F] uppercase tracking-wider">Phone Helpline</p>
-                <a href="tel:03274540905" className="text-base font-bold text-gray-800 hover:text-[#00674F] hover:underline transition-colors block">
+                <p className="text-[10px] font-bold text-[#00ffc4] uppercase tracking-wider">Phone Helpline</p>
+                <a href="tel:03274540905" className="text-base font-extrabold text-white hover:text-[#00ffc4] hover:underline transition-colors block">
                   0327-454-0905
                 </a>
-                <p className="text-xs text-gray-500">Call us for immediate support</p>
+                <p className="text-xs text-emerald-100/50">Call us for immediate support</p>
               </div>
             </div>
 
             {/* Email Card */}
-            <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow">
-              <div className="p-3 bg-[#00674F]/10 rounded-lg text-[#00674F]">
+            <div className="bg-slate-900/40 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-[0_4px_25px_rgba(0,0,0,0.2)] flex items-start gap-4 hover:shadow-[0_8px_30px_rgba(0,255,196,0.05)] hover:border-[#00ffc4]/30 hover:-translate-y-0.5 transition-all duration-300 group">
+              <div className="p-3 bg-[#00ffc4]/10 rounded-xl text-[#00ffc4] group-hover:bg-[#00ffc4] group-hover:text-[#012218] transition-all duration-300 shadow-sm">
                 <Mail size={22} />
               </div>
               <div className="space-y-1">
-                <p className="text-xs font-semibold text-[#00674F] uppercase tracking-wider">Email Address</p>
-                <a href="mailto:support@murammat.pk" className="text-base font-bold text-gray-800 hover:text-[#00674F] hover:underline transition-colors block">
+                <p className="text-[10px] font-bold text-[#00ffc4] uppercase tracking-wider">Email Address</p>
+                <a href="mailto:support@murammat.pk" className="text-base font-extrabold text-white hover:text-[#00ffc4] hover:underline transition-colors block">
                   support@murammat.pk
                 </a>
-                <p className="text-xs text-gray-500">We respond to email within 24 hours</p>
+                <p className="text-xs text-emerald-100/50">We respond to email within 24 hours</p>
               </div>
             </div>
 
             {/* WhatsApp Card */}
-            <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow">
-              <div className="p-3 bg-green-50 rounded-lg text-green-600">
+            <div className="bg-slate-900/40 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-[0_4px_25px_rgba(0,0,0,0.2)] flex items-start gap-4 hover:shadow-[0_8px_30px_rgba(34,197,94,0.05)] hover:border-green-400/30 hover:-translate-y-0.5 transition-all duration-300 group">
+              <div className="p-3 bg-green-500/10 rounded-xl text-green-400 group-hover:bg-green-500 group-hover:text-[#012218] transition-all duration-300 shadow-sm">
                 <WhatsappIcon size={22} />
               </div>
               <div className="space-y-1">
-                <p className="text-xs font-semibold text-green-600 uppercase tracking-wider">WhatsApp Chat</p>
-                <a href="https://wa.me/923274540905" target="_blank" rel="noopener noreferrer" className="text-base font-bold text-gray-800 hover:text-green-600 hover:underline transition-colors block">
+                <p className="text-[10px] font-bold text-green-400 uppercase tracking-wider">WhatsApp Chat</p>
+                <a href="https://wa.me/923274540905" target="_blank" rel="noopener noreferrer" className="text-base font-extrabold text-white hover:text-green-400 hover:underline transition-colors block">
                   +92 327 4540905
                 </a>
-                <p className="text-xs text-gray-500">Chat with support representatives online</p>
+                <p className="text-xs text-emerald-100/50">Chat with support representatives online</p>
               </div>
             </div>
 
             {/* Address Card */}
-            <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow">
-              <div className="p-3 bg-[#00674F]/10 rounded-lg text-[#00674F]">
+            <div className="bg-slate-900/40 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-[0_4px_25px_rgba(0,0,0,0.2)] flex items-start gap-4 hover:shadow-[0_8px_30px_rgba(0,255,196,0.05)] hover:border-[#00ffc4]/30 hover:-translate-y-0.5 transition-all duration-300 group">
+              <div className="p-3 bg-[#00ffc4]/10 rounded-xl text-[#00ffc4] group-hover:bg-[#00ffc4] group-hover:text-[#012218] transition-all duration-300 shadow-sm">
                 <MapPin size={22} />
               </div>
               <div className="space-y-1">
-                <p className="text-xs font-semibold text-[#00674F] uppercase tracking-wider">Office Address</p>
-                <p className="text-sm font-semibold text-gray-800 leading-relaxed">
+                <p className="text-[10px] font-bold text-[#00ffc4] uppercase tracking-wider">Office Address</p>
+                <p className="text-base font-extrabold text-white leading-relaxed">
                   Lahore, Punjab, Pakistan
                 </p>
-                <p className="text-xs text-gray-500">Serving residential & commercial clients</p>
+                <p className="text-xs text-emerald-100/50">Serving residential & commercial clients</p>
               </div>
             </div>
 
             {/* Hours Card */}
-            <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow">
-              <div className="p-3 bg-[#00674F]/10 rounded-lg text-[#00674F]">
+            <div className="bg-slate-900/40 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-[0_4px_25px_rgba(0,0,0,0.2)] flex items-start gap-4 hover:shadow-[0_8px_30px_rgba(0,255,196,0.05)] hover:border-[#00ffc4]/30 hover:-translate-y-0.5 transition-all duration-300 group">
+              <div className="p-3 bg-[#00ffc4]/10 rounded-xl text-[#00ffc4] group-hover:bg-[#00ffc4] group-hover:text-[#012218] transition-all duration-300 shadow-sm">
                 <Clock size={22} />
               </div>
               <div className="space-y-1">
-                <p className="text-xs font-semibold text-[#00674F] uppercase tracking-wider">Working Hours</p>
-                <p className="text-sm font-semibold text-gray-800">
+                <p className="text-[10px] font-bold text-[#00ffc4] uppercase tracking-wider">Working Hours</p>
+                <p className="text-base font-extrabold text-white">
                   Monday - Sunday: 9:00 AM - 9:00 PM
                 </p>
-                <p className="text-xs text-gray-500">Helpline open daily for emergencies</p>
+                <p className="text-xs text-emerald-100/50">Helpline open daily for emergencies</p>
               </div>
             </div>
           </div>
 
           {/* Social Links Panel */}
-          <div className="space-y-4 pt-4 border-t border-gray-200">
-            <h3 className="text-sm font-bold text-gray-900">Follow Our Updates</h3>
+          <div className="space-y-4 pt-6 border-t border-white/10">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider">Follow Our Updates</h3>
             <div className="flex items-center gap-3">
               <a href="https://www.facebook.com/profile.php?id=61570663409989" target="_blank" rel="noopener noreferrer" 
-                className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-white hover:bg-[#1877f2] hover:border-transparent transition-all duration-300">
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#1877f2] hover:border-transparent transition-all duration-300 shadow-sm hover:-translate-y-0.5">
                 <FacebookIcon size={18} />
               </a>
               <a href="https://www.instagram.com/murammat_pk" target="_blank" rel="noopener noreferrer" 
-                className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-white hover:bg-[#c13584] hover:border-transparent transition-all duration-300">
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#c13584] hover:border-transparent transition-all duration-300 shadow-sm hover:-translate-y-0.5">
                 <InstagramIcon size={18} />
               </a>
               <a href="https://www.tiktok.com/@murammat.pk" target="_blank" rel="noopener noreferrer" 
-                className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-white hover:bg-black hover:border-transparent transition-all duration-300">
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#000000] hover:border-transparent transition-all duration-300 shadow-sm hover:-translate-y-0.5">
                 <TiktokIcon size={18} />
               </a>
               <a href="https://www.youtube.com/@Murammat-admin" target="_blank" rel="noopener noreferrer" 
-                className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-white hover:bg-[#ff0000] hover:border-transparent transition-all duration-300">
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#ff0000] hover:border-transparent transition-all duration-300 shadow-sm hover:-translate-y-0.5">
                 <YoutubeIcon size={18} />
               </a>
               <a href="https://pin.it/7f3sbiIwW" target="_blank" rel="noopener noreferrer" 
-                className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-white hover:bg-[#bd081c] hover:border-transparent transition-all duration-300">
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#bd081c] hover:border-transparent transition-all duration-300 shadow-sm hover:-translate-y-0.5">
                 <PinterestIcon size={18} />
               </a>
             </div>
@@ -209,24 +264,24 @@ const Contact: React.FC = () => {
         </div>
 
         {/* Right Side: Contact Form Container */}
-        <div className="lg:col-span-7 bg-white rounded-2xl shadow-xl shadow-gray-100/50 border border-gray-100 p-6 sm:p-10 relative overflow-hidden flex flex-col justify-between">
-          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#00674F] to-[#009b77]"></div>
+        <div className="lg:col-span-7 bg-slate-900/60 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/10 p-6 sm:p-10 relative overflow-hidden flex flex-col justify-between z-10">
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#00ffc4] via-[#009b77] to-yellow-300"></div>
           
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#00674F]/10 rounded-full flex items-center justify-center text-[#00674F]">
+              <div className="w-10 h-10 bg-[#00674F]/20 rounded-full flex items-center justify-center text-[#00ffc4] shadow-inner">
                 <MessageSquare size={20} />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-900 tracking-tight">Send Us a Message</h3>
-                <p className="text-xs text-gray-500">Provide details of your query or feedback below</p>
+                <h3 className="text-xl font-bold text-white tracking-tight">Send Us a Message</h3>
+                <p className="text-xs text-emerald-100/50">Provide details of your query or feedback below</p>
               </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
-                  <label htmlFor="name" className="text-xs font-bold text-gray-700 uppercase tracking-wide">Full Name *</label>
+                  <label htmlFor="name" className="text-xs font-bold text-slate-300 uppercase tracking-wide">Full Name *</label>
                   <input
                     id="name"
                     required
@@ -235,11 +290,11 @@ const Contact: React.FC = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     placeholder="Enter your name"
-                    className="w-full px-4 py-3 text-sm rounded-lg border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#00674F]/30 focus:border-[#00674F] transition-all"
+                    className="w-full px-4 py-3.5 text-sm rounded-lg border border-white/10 bg-white/5 text-white placeholder-emerald-100/30 focus:outline-none focus:ring-2 focus:ring-[#00ffc4] focus:border-transparent transition-all"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="phone" className="text-xs font-bold text-gray-700 uppercase tracking-wide">Phone Number *</label>
+                  <label htmlFor="phone" className="text-xs font-bold text-slate-300 uppercase tracking-wide">Phone Number *</label>
                   <input
                     id="phone"
                     required
@@ -249,14 +304,14 @@ const Contact: React.FC = () => {
                     onChange={handleInputChange}
                     placeholder="03XXXXXXXXX (11 digits)"
                     maxLength={11}
-                    className={`w-full px-4 py-3 text-sm rounded-lg border bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 transition-all ${phoneError ? 'border-red-400 focus:ring-red-500/20' : 'border-gray-200 focus:ring-[#00674F]/30 focus:border-[#00674F]'}`}
+                    className={`w-full px-4 py-3.5 text-sm rounded-lg border bg-white/5 text-white placeholder-emerald-100/30 focus:outline-none focus:ring-2 transition-all ${phoneError ? 'border-red-500 focus:ring-red-500' : 'border-white/10 focus:ring-[#00ffc4] focus:border-transparent'}`}
                   />
-                  {phoneError && <p className="text-red-500 text-[11px] font-semibold mt-1">{phoneError}</p>}
+                  {phoneError && <p className="text-red-400 text-[11px] font-semibold mt-1">{phoneError}</p>}
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="email" className="text-xs font-bold text-gray-700 uppercase tracking-wide">Email Address *</label>
+                <label htmlFor="email" className="text-xs font-bold text-slate-300 uppercase tracking-wide">Email Address *</label>
                 <input
                   id="email"
                   required
@@ -265,12 +320,12 @@ const Contact: React.FC = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="Enter email address"
-                  className="w-full px-4 py-3 text-sm rounded-lg border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#00674F]/30 focus:border-[#00674F] transition-all"
+                  className="w-full px-4 py-3.5 text-sm rounded-lg border border-white/10 bg-white/5 text-white placeholder-emerald-100/30 focus:outline-none focus:ring-2 focus:ring-[#00ffc4] focus:border-transparent transition-all"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="message" className="text-xs font-bold text-gray-700 uppercase tracking-wide">Message / Query Details *</label>
+                <label htmlFor="message" className="text-xs font-bold text-slate-300 uppercase tracking-wide">Message / Query Details *</label>
                 <textarea
                   id="message"
                   required
@@ -279,14 +334,14 @@ const Contact: React.FC = () => {
                   onChange={handleInputChange}
                   placeholder="Tell us what you need help with..."
                   rows={5}
-                  className="w-full px-4 py-3 text-sm rounded-lg border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#00674F]/30 focus:border-[#00674F] transition-all resize-none"
+                  className="w-full px-4 py-3.5 text-sm rounded-lg border border-white/10 bg-white/5 text-white placeholder-emerald-100/30 focus:outline-none focus:ring-2 focus:ring-[#00ffc4] focus:border-transparent transition-all resize-none"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3.5 bg-[#00674F] hover:bg-[#00523f] text-white text-sm font-bold rounded-lg shadow-lg shadow-[#00674F]/20 hover:shadow-xl hover:shadow-[#00674F]/30 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 group disabled:opacity-75 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
+                className="w-full py-3.5 bg-gradient-to-r from-[#00674F] to-[#009b77] hover:from-[#00523f] hover:to-[#00aa82] text-white text-sm font-bold rounded-lg shadow-lg shadow-[#009b77]/20 hover:shadow-xl hover:shadow-[#009b77]/40 hover:-translate-y-0.5 active:scale-[0.98] transition-all flex items-center justify-center gap-2 group disabled:opacity-75 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
               >
                 {isSubmitting ? (
                   <span>Submitting message...</span>
@@ -300,8 +355,8 @@ const Contact: React.FC = () => {
             </form>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-            <p className="text-xs text-gray-400 leading-relaxed">
+          <div className="mt-8 pt-6 border-t border-white/5 text-center">
+            <p className="text-xs text-slate-400 leading-relaxed">
               By submitting this form, you agree that our team can contact you via call or email matching the details provided.
             </p>
           </div>

@@ -60,21 +60,22 @@ const WhyChooseUs: React.FC = () => {
               Murammat.pk is a value addition which covers all 360 home services under one platform. Our motive is to provide the best services to our residential, commercial, and corporate customers in Lahore. Our main key components to success are:
             </p>
 
-            {/* Features List */}
-            <ul className="space-y-4">
+            {/* Features Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {features.map((feature) => (
-                <li key={feature.id} className="flex items-center group cursor-default">
-                  {/* Icon Container - Emerald Green Theme */}
-                  <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-white border border-[#00674F]/20 text-[#00674F] mr-4 shadow-sm transition-all duration-300 group-hover:bg-[#00674F] group-hover:text-white">
+                <div 
+                  key={feature.id} 
+                  className="flex items-center p-4 rounded-xl border border-gray-100 bg-[#FAFAFA]/70 transition-all duration-300 hover:shadow-md hover:border-[#00674F]/20 hover:bg-white group cursor-default"
+                >
+                  <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-[#00674F]/5 text-[#00674F] mr-3.5 transition-all duration-300 group-hover:bg-[#00674F] group-hover:text-white shadow-sm">
                     {feature.icon}
                   </div>
-                  {/* Text */}
-                  <span className="text-sm md:text-base font-semibold text-gray-800 group-hover:text-[#00674F] transition-colors duration-300">
+                  <span className="text-sm font-bold text-gray-800 leading-snug group-hover:text-[#00674F] transition-colors duration-300">
                     {feature.text}
                   </span>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
 
         </div>

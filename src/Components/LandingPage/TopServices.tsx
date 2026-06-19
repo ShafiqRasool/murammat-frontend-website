@@ -86,22 +86,25 @@ const TopServices: React.FC = () => {
               <div 
                 key={category.id} 
                 onClick={() => navigate('/specific-categories', { state: { categoryName: category.name, categoryId: category.id } })}
-                className="w-[150px] sm:w-[190px] md:w-[230px] lg:flex-1 min-w-[170px] max-w-[240px] bg-white border border-gray-200 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,103,79,0.15)] hover:-translate-y-2 hover:border-[#00674F]/40 group flex flex-col"
+                className="w-[150px] sm:w-[190px] md:w-[230px] lg:flex-1 min-w-[170px] max-w-[240px] bg-white border border-gray-100 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0,103,79,0.12)] hover:-translate-y-2 hover:border-[#00674F]/30 group flex flex-col"
               >
                 {/* Square Image Container */}
                 <div className="w-full aspect-square overflow-hidden bg-gray-50 relative">
                   <img 
                     src={getImageUrl(category.image_url, category.name)} 
                     alt={category.name} 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 
-                <div className="p-4 flex-grow flex items-center justify-center min-h-[60px] bg-white">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-800 group-hover:text-[#00674F] transition-colors line-clamp-2">
+                <div className="p-4 flex-grow flex items-center justify-between min-h-[60px] bg-white border-t border-gray-50">
+                  <h3 className="text-xs sm:text-sm font-extrabold text-gray-800 group-hover:text-[#00674F] transition-colors line-clamp-2">
                     {category.name}
                   </h3>
+                  <span className="text-gray-400 group-hover:text-[#00674F] group-hover:translate-x-1.5 transition-all duration-300 transform text-sm pl-2">
+                    ➔
+                  </span>
                 </div>
               </div>
             ))
