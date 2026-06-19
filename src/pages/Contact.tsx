@@ -86,12 +86,12 @@ const Contact: React.FC = () => {
     <div className="w-full min-h-screen bg-gradient-to-br from-[#012218] via-[#003B2D] to-[#012218] text-white flex flex-col antialiased relative overflow-hidden">
       <style>{`
         @keyframes float-blob-contact {
-          0%, 100% { transform: translate(0px, 0px) scale(1); }
-          50% { transform: translate(-25px, 25px) scale(1.06); }
+          0%, 100% { transform: translate3d(0px, 0px, 0) scale(1); }
+          50% { transform: translate3d(-25px, 25px, 0) scale(1.06); }
         }
         @keyframes float-blob-contact-2 {
-          0%, 100% { transform: translate(0px, 0px) scale(1.05); }
-          50% { transform: translate(30px, -20px) scale(0.95); }
+          0%, 100% { transform: translate3d(0px, 0px, 0) scale(1.05); }
+          50% { transform: translate3d(30px, -20px, 0) scale(0.95); }
         }
         @keyframes text-shimmer {
           0% { background-position: 0% 50%; }
@@ -100,9 +100,11 @@ const Contact: React.FC = () => {
         }
         .animate-float-contact {
           animation: float-blob-contact 12s ease-in-out infinite;
+          will-change: transform;
         }
         .animate-float-contact-2 {
           animation: float-blob-contact-2 15s ease-in-out infinite;
+          will-change: transform;
         }
         .animate-text-shimmer {
           background-size: 200% auto;
@@ -165,7 +167,7 @@ const Contact: React.FC = () => {
 
           <div className="grid grid-cols-1 gap-5">
             {/* Phone Card */}
-            <div className="bg-slate-900/40 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-[0_4px_25px_rgba(0,0,0,0.2)] flex items-start gap-4 hover:shadow-[0_8px_30px_rgba(0,255,196,0.05)] hover:border-[#00ffc4]/30 hover:-translate-y-0.5 transition-all duration-300 group">
+            <div className="bg-[#012d22]/90 p-5 rounded-2xl border border-white/10 shadow-[0_4px_25px_rgba(0,0,0,0.2)] flex items-start gap-4 hover:shadow-[0_8px_30px_rgba(0,255,196,0.05)] hover:border-[#00ffc4]/30 hover:-translate-y-0.5 transition-all duration-300 group">
               <div className="p-3 bg-[#00ffc4]/10 rounded-xl text-[#00ffc4] group-hover:bg-[#00ffc4] group-hover:text-[#012218] transition-all duration-300 shadow-sm">
                 <Phone size={22} />
               </div>
@@ -179,7 +181,7 @@ const Contact: React.FC = () => {
             </div>
 
             {/* Email Card */}
-            <div className="bg-slate-900/40 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-[0_4px_25px_rgba(0,0,0,0.2)] flex items-start gap-4 hover:shadow-[0_8px_30px_rgba(0,255,196,0.05)] hover:border-[#00ffc4]/30 hover:-translate-y-0.5 transition-all duration-300 group">
+            <div className="bg-[#012d22]/90 p-5 rounded-2xl border border-white/10 shadow-[0_4px_25px_rgba(0,0,0,0.2)] flex items-start gap-4 hover:shadow-[0_8px_30px_rgba(0,255,196,0.05)] hover:border-[#00ffc4]/30 hover:-translate-y-0.5 transition-all duration-300 group">
               <div className="p-3 bg-[#00ffc4]/10 rounded-xl text-[#00ffc4] group-hover:bg-[#00ffc4] group-hover:text-[#012218] transition-all duration-300 shadow-sm">
                 <Mail size={22} />
               </div>
@@ -193,7 +195,7 @@ const Contact: React.FC = () => {
             </div>
 
             {/* WhatsApp Card */}
-            <div className="bg-slate-900/40 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-[0_4px_25px_rgba(0,0,0,0.2)] flex items-start gap-4 hover:shadow-[0_8px_30px_rgba(34,197,94,0.05)] hover:border-green-400/30 hover:-translate-y-0.5 transition-all duration-300 group">
+            <div className="bg-[#012d22]/90 p-5 rounded-2xl border border-white/10 shadow-[0_4px_25px_rgba(0,0,0,0.2)] flex items-start gap-4 hover:shadow-[0_8px_30px_rgba(34,197,94,0.05)] hover:border-green-400/30 hover:-translate-y-0.5 transition-all duration-300 group">
               <div className="p-3 bg-green-500/10 rounded-xl text-green-400 group-hover:bg-green-500 group-hover:text-[#012218] transition-all duration-300 shadow-sm">
                 <WhatsappIcon size={22} />
               </div>
@@ -207,7 +209,7 @@ const Contact: React.FC = () => {
             </div>
 
             {/* Address Card */}
-            <div className="bg-slate-900/40 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-[0_4px_25px_rgba(0,0,0,0.2)] flex items-start gap-4 hover:shadow-[0_8px_30px_rgba(0,255,196,0.05)] hover:border-[#00ffc4]/30 hover:-translate-y-0.5 transition-all duration-300 group">
+            <div className="bg-[#012d22]/90 p-5 rounded-2xl border border-white/10 shadow-[0_4px_25px_rgba(0,0,0,0.2)] flex items-start gap-4 hover:shadow-[0_8px_30px_rgba(0,255,196,0.05)] hover:border-[#00ffc4]/30 hover:-translate-y-0.5 transition-all duration-300 group">
               <div className="p-3 bg-[#00ffc4]/10 rounded-xl text-[#00ffc4] group-hover:bg-[#00ffc4] group-hover:text-[#012218] transition-all duration-300 shadow-sm">
                 <MapPin size={22} />
               </div>
@@ -221,7 +223,7 @@ const Contact: React.FC = () => {
             </div>
 
             {/* Hours Card */}
-            <div className="bg-slate-900/40 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-[0_4px_25px_rgba(0,0,0,0.2)] flex items-start gap-4 hover:shadow-[0_8px_30px_rgba(0,255,196,0.05)] hover:border-[#00ffc4]/30 hover:-translate-y-0.5 transition-all duration-300 group">
+            <div className="bg-[#012d22]/90 p-5 rounded-2xl border border-white/10 shadow-[0_4px_25px_rgba(0,0,0,0.2)] flex items-start gap-4 hover:shadow-[0_8px_30px_rgba(0,255,196,0.05)] hover:border-[#00ffc4]/30 hover:-translate-y-0.5 transition-all duration-300 group">
               <div className="p-3 bg-[#00ffc4]/10 rounded-xl text-[#00ffc4] group-hover:bg-[#00ffc4] group-hover:text-[#012218] transition-all duration-300 shadow-sm">
                 <Clock size={22} />
               </div>
@@ -264,7 +266,7 @@ const Contact: React.FC = () => {
         </div>
 
         {/* Right Side: Contact Form Container */}
-        <div className="lg:col-span-7 bg-slate-900/60 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/10 p-6 sm:p-10 relative overflow-hidden flex flex-col justify-between z-10">
+        <div className="lg:col-span-7 bg-[#01281e]/95 rounded-2xl shadow-2xl border border-white/10 p-6 sm:p-10 relative overflow-hidden flex flex-col justify-between z-10">
           <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#00ffc4] via-[#009b77] to-yellow-300"></div>
           
           <div className="space-y-6">
