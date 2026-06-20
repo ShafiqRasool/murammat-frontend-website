@@ -2,8 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import API from '../utils/api';
-import { Card } from '../Components/UI/Card';
 import { Link } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { 
+  User, 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Edit3, 
+  Package, 
+  Calendar, 
+  Clock, 
+  CreditCard, 
+  ShieldCheck, 
+  X, 
+  CheckCircle2, 
+  FileText 
+} from 'lucide-react';
 
 export default function Dashboard() {
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -57,7 +72,7 @@ export default function Dashboard() {
 
   if (!isAuthenticated) {
     return (
-      <div className="p-10 text-center text-red-500">
+      <div className="w-full min-h-screen bg-slate-50 flex items-center justify-center p-6 text-center text-red-500 font-bold">
         You must be logged in to view the dashboard.
       </div>
     );
@@ -65,13 +80,29 @@ export default function Dashboard() {
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'assigned': return 'bg-blue-100 text-blue-800';
-      case 'accepted': return 'bg-indigo-100 text-indigo-800';
-      case 'in_progress': return 'bg-purple-100 text-purple-800';
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'pending': return 'bg-yellow-50 text-yellow-700 border border-yellow-100';
+      case 'Technician Assigned': return 'bg-blue-50 text-blue-700 border border-blue-100';
+      case 'Work Started': return 'bg-purple-50 text-purple-700 border border-purple-100';
+      case 'Repair': return 'bg-orange-50 text-orange-700 border border-orange-100';
+      case 'Work Done': return 'bg-indigo-50 text-indigo-700 border border-indigo-100';
+      case 'BookingDone':
+      case 'Rated & Reviewed': return 'bg-green-50 text-[#00674F] border border-green-150';
+      case 'cancelled': return 'bg-red-50 text-red-700 border border-red-100';
+      default: return 'bg-gray-50 text-gray-700 border border-gray-100';
+    }
+  };
+
+  const getStatusLineColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'from-yellow-400 to-amber-300';
+      case 'Technician Assigned': return 'from-blue-400 to-cyan-400';
+      case 'Work Started': return 'from-purple-400 to-fuchsia-400';
+      case 'Repair': return 'from-orange-400 to-amber-400';
+      case 'Work Done': return 'from-indigo-400 to-violet-400';
+      case 'BookingDone':
+      case 'Rated & Reviewed': return 'from-[#00674F] to-[#009b77]';
+      case 'cancelled': return 'from-red-400 to-rose-450';
+      default: return 'from-gray-300 to-gray-400';
     }
   };
 
@@ -86,35 +117,48 @@ export default function Dashboard() {
     }
   };
 
+  const getStatusIndex = (status: string) => {
+    switch (status) {
+      case 'pending': return 0;
+      case 'Technician Assigned': return 1;
+      case 'Work Started': return 2;
+      case 'Repair': return 2;
+      case 'Work Done': return 3;
+      case 'BookingDone':
+      case 'Rated & Reviewed': return 4;
+      default: return 0;
+    }
+  };
+
   const getStatusStepper = (status: string) => {
     const statusSteps = [
       { id: 'pending', label: 'Order Placed' },
-      { id: 'assigned', label: 'Provider Assigned' },
-      { id: 'accepted', label: 'Accepted by Provider' },
-      { id: 'in_progress', label: 'Work In Progress' },
-      { id: 'completed', label: 'Completed' }
+      { id: 'Technician Assigned', label: 'Technician Assigned' },
+      { id: 'Work Started', label: 'Work In Progress' },
+      { id: 'Work Done', label: 'Work Completed' },
+      { id: 'BookingDone', label: 'Completed' }
     ];
 
     if (status === 'cancelled') {
       return (
-        <div className="bg-red-50 p-4 rounded-xl border border-red-100 flex items-center justify-center">
-          <span className="text-red-600 font-bold text-sm">This order has been cancelled.</span>
+        <div className="bg-red-50/50 p-4 rounded-xl border border-red-100 flex items-center justify-center text-red-650 font-bold text-sm">
+          ❌ This order has been cancelled.
         </div>
       );
     }
 
-    const currentIndex = statusSteps.findIndex(s => s.id === status);
+    const currentIndex = getStatusIndex(status);
     
     return (
-      <div className="relative flex flex-col md:flex-row justify-between items-start md:items-center w-full gap-4 md:gap-0 mt-2 bg-gray-50 p-4 rounded-xl border border-gray-100">
+      <div className="relative flex flex-col md:flex-row justify-between items-start md:items-center w-full gap-4 md:gap-0 mt-2 bg-slate-50 p-5 rounded-2xl border border-gray-150">
         {/* Progress Line */}
-        <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gray-250 -translate-y-1/2 rounded-full mx-6 z-0"></div>
+        <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -translate-y-1/2 rounded-full mx-8 z-0"></div>
         
         {/* Active Progress Line */}
         {currentIndex >= 0 && (
           <div 
-            className="hidden md:block absolute top-1/2 left-0 h-0.5 bg-[#00674F] -translate-y-1/2 rounded-full mx-6 z-0 transition-all duration-500"
-            style={{ width: `calc(${(currentIndex / (statusSteps.length - 1)) * 100}% - 3rem)` }}
+            className="hidden md:block absolute top-1/2 left-0 h-0.5 bg-[#00674F] -translate-y-1/2 rounded-full mx-8 z-0 transition-all duration-1000"
+            style={{ width: `calc(${(currentIndex / (statusSteps.length - 1)) * 100}% - 4rem)` }}
           ></div>
         )}
 
@@ -137,12 +181,12 @@ export default function Dashboard() {
                   ? isCurrent 
                     ? 'bg-[#00674F] text-white ring-4 ring-[#00674F]/20 scale-105' 
                     : 'bg-[#00674F] text-white' 
-                  : 'bg-white text-gray-400 border border-gray-200'}`}
+                  : 'bg-white text-gray-400 border border-gray-250'}`}
               >
-                {isCompleted ? '✓' : index + 1}
+                {isCompleted ? <CheckCircle2 size={14} className="stroke-[2.5]" /> : index + 1}
               </div>
               <div className={`flex flex-col md:items-center ${isCompleted ? 'text-gray-900' : 'text-gray-400'}`}>
-                <span className={`text-[11px] font-bold md:text-center ${isCurrent ? 'text-[#00674F]' : ''}`}>{step.label}</span>
+                <span className={`text-[10px] font-bold md:text-center tracking-tight ${isCurrent ? 'text-[#00674F] text-[11px]' : ''}`}>{step.label}</span>
               </div>
             </div>
           );
@@ -152,216 +196,246 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
-      <div className="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-[#00674F]">
-            Welcome back, {user?.email?.split('@')[0]}
-          </h1>
-          <p className="text-gray-500 mt-2">
-            {user?.role === 'customer' 
-              ? 'Here is an overview of your recent service bookings.' 
-              : 'Here is an overview of your assigned jobs.'}
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-emerald-50/20 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <Toaster position="top-right" />
+
+      {/* Background blurs */}
+      <div className="absolute top-[10%] left-[-5%] w-[400px] h-[400px] bg-emerald-500/5 rounded-full blur-3xl pointer-events-none z-0"></div>
+      <div className="absolute bottom-[10%] right-[-5%] w-[450px] h-[450px] bg-yellow-500/5 rounded-full blur-3xl pointer-events-none z-0"></div>
+
+      <div className="max-w-7xl mx-auto relative z-10 space-y-8">
+        
+        {/* Welcome Section */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+          <div className="space-y-1">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight capitalize">
+              Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00674F] to-[#009b77]">{profile?.first_name || user?.email?.split('@')[0]}</span>
+            </h1>
+            <p className="text-gray-500 text-sm font-medium">
+              {user?.role === 'customer' 
+                ? 'Here is an overview of your recent service bookings.' 
+                : 'Here is an overview of your assigned jobs.'}
+            </p>
+          </div>
+        </div>
+
+        {/* Profile Info Header Card */}
+        {!profileLoading && profile && (
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl border border-gray-150 p-6 md:p-8 shadow-xl shadow-gray-200/30 relative overflow-hidden">
+            {/* Accent gradient line */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#00ffc4] via-[#00674F] to-yellow-450"></div>
+            
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+                {/* Initials Avatar */}
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#00674F] to-[#009b77] text-white flex items-center justify-center text-2xl font-extrabold uppercase shadow-lg border border-white/20 flex-shrink-0">
+                  {profile.first_name ? profile.first_name.charAt(0) : (profile.email ? profile.email.charAt(0) : 'U')}
+                </div>
+                
+                <div className="text-center sm:text-left space-y-2">
+                  <div className="flex flex-col sm:flex-row items-center gap-2">
+                    <h2 className="text-xl font-black text-gray-900 capitalize leading-tight">
+                      {profile.first_name || 'Customer'} {profile.last_name || ''}
+                    </h2>
+                    <span className="text-[10px] px-3 py-0.5 rounded-full font-extrabold bg-[#00674F]/10 text-[#00674F] uppercase tracking-wider border border-[#00674F]/20">
+                      {user?.role}
+                    </span>
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-xs text-gray-500 font-bold tracking-wide">
+                    {profile.email && (
+                      <span className="flex items-center gap-1.5 justify-center sm:justify-start">
+                        <Mail size={13} className="text-gray-400" />
+                        {profile.email}
+                      </span>
+                    )}
+                    {profile.phone && (
+                      <span className="flex items-center gap-1.5 justify-center sm:justify-start">
+                        <Phone size={13} className="text-gray-400" />
+                        {profile.phone}
+                      </span>
+                    )}
+                  </div>
+
+                  {user?.role === 'customer' && address && (
+                    <div className="mt-3 text-xs text-gray-650 bg-slate-50 border border-gray-150 p-4 rounded-2xl max-w-xl text-left space-y-1">
+                      <span className="font-extrabold text-emerald-800 flex items-center gap-1.5 text-[9px] uppercase tracking-wider">
+                        <MapPin size={11} /> Default Service Address
+                      </span>
+                      <p className="font-bold text-gray-900 leading-snug">{address.address_line1}</p>
+                      {address.area_name && (
+                        <p className="text-[10px] text-gray-500 font-medium">{address.area_name}, {address.city_name}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <Link 
+                to="/profile" 
+                className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-emerald-50 border border-gray-250 hover:border-emerald-250 text-[#00674F] font-bold rounded-xl transition-all duration-300 text-xs shadow-sm hover:-translate-y-0.5 active:scale-95 cursor-pointer uppercase tracking-wider"
+              >
+                <Edit3 size={14} />
+                <span>Edit Profile</span>
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-50/50 text-red-700 p-4 rounded-xl border border-red-100 flex items-center gap-2 text-sm font-semibold">
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* Bookings / Assigned Jobs Section */}
+        <div className="space-y-6">
+          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <Package size={20} className="text-[#00674F]" />
+            <span>{user?.role === 'customer' ? 'My Bookings History' : 'Assigned Jobs'}</span>
+          </h2>
+
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+               {[1, 2, 3].map(i => (
+                 <div key={i} className="bg-gray-100 h-56 rounded-3xl border border-gray-200"></div>
+               ))}
+            </div>
+          ) : bookings.length === 0 ? (
+            <div className="bg-white rounded-3xl p-12 text-center border border-gray-150 shadow-sm max-w-xl mx-auto space-y-4">
+              <div className="w-14 h-14 bg-slate-50 text-gray-400 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                <FileText size={28} />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900">No bookings found</h3>
+              <p className="text-gray-500 text-xs leading-relaxed">
+                {user?.role === 'customer' 
+                  ? "You haven't booked any home services yet." 
+                  : "You have no assigned jobs at the moment."}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {bookings.map((booking: any) => (
+                <div 
+                  key={booking.id} 
+                  className="bg-white rounded-3xl p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-gray-200/40 cursor-pointer border border-gray-150 hover:border-[#00674F]/30 relative overflow-hidden flex flex-col justify-between"
+                  onClick={() => setSelectedBooking(booking)}
+                >
+                  {/* Status Indicator Line */}
+                  <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${getStatusLineColor(booking.status)}`}></div>
+
+                  <div>
+                    <div className="flex justify-between items-start mb-4">
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold capitalize ${getStatusBadgeColor(booking.status)}`}>
+                        {booking.status.replace('_', ' ')}
+                      </span>
+                      <span className="text-xs text-gray-405 font-extrabold tracking-tight">
+                        {new Date(booking.scheduled_time).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
+                    </div>
+
+                    <div className="mb-4">
+                      <h4 className="font-extrabold text-sm text-gray-800 uppercase tracking-wider mb-2.5">Requested Services</h4>
+                      <ul className="text-xs text-gray-600 space-y-2">
+                        {booking.items.map((item: any, idx: number) => (
+                          <li key={idx} className="flex justify-between border-b border-gray-50 pb-1.5">
+                            <span className="font-semibold text-gray-700 capitalize">{item.quantity}x {item.service_name || 'Service'}</span>
+                            <span className="font-bold text-gray-900">Rs. {Number(item.price * item.quantity).toLocaleString()}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="pt-3 border-t border-gray-50 flex justify-between items-center mb-4">
+                      <span className="text-xs font-bold text-gray-400">Total Amount</span>
+                      <span className="font-black text-[#00674F] text-base">
+                        Rs. {Number(booking.items.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0)).toLocaleString()}
+                      </span>
+                    </div>
+
+                    {user?.role === 'provider' && booking.status !== 'completed' && booking.status !== 'cancelled' && (
+                      <div className="pt-2 flex flex-wrap gap-2">
+                        {booking.status === 'assigned' && (
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              updateBookingStatus(booking.id, 'accepted');
+                            }}
+                            className="w-full py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition-colors cursor-pointer shadow-md"
+                          >
+                            Accept Job
+                          </button>
+                        )}
+                        {booking.status === 'accepted' && (
+                           <button 
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               updateBookingStatus(booking.id, 'in_progress');
+                             }}
+                             className="w-full py-2 bg-purple-600 text-white rounded-xl text-xs font-bold hover:bg-purple-700 transition-colors cursor-pointer shadow-md"
+                           >
+                             Start Work
+                           </button>
+                        )}
+                        {booking.status === 'in_progress' && (
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              updateBookingStatus(booking.id, 'completed');
+                            }}
+                            className="w-full py-2 bg-[#00674F] text-white rounded-xl text-xs font-bold hover:bg-[#00523f] transition-colors cursor-pointer shadow-md"
+                          >
+                            Mark Completed
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="pt-2 text-center">
+                      <span className="text-[10px] font-bold text-[#00674F] hover:underline uppercase tracking-wider">
+                        {user?.role === 'customer' ? 'Track Live Order' : 'Complete Details'} &rarr;
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Profile Info Card */}
-      {!profileLoading && profile && (
-        <Card className="p-6 mb-8 border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all duration-300">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-4">
-              <div className="w-16 h-16 rounded-full bg-[#00674F] text-white flex items-center justify-center text-2xl font-bold uppercase shadow-md flex-shrink-0">
-                {profile.first_name ? profile.first_name.charAt(0) : (profile.email ? profile.email.charAt(0) : 'U')}
-              </div>
-              <div className="text-center md:text-left">
-                <h2 className="text-xl font-extrabold text-gray-900 capitalize flex items-center gap-2 justify-center md:justify-start">
-                  {profile.first_name || 'Customer'} {profile.last_name || ''}
-                  <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-[#00674F]/10 text-[#00674F] uppercase tracking-wider">
-                    {user?.role}
-                  </span>
-                </h2>
-                <div className="mt-2 flex flex-col md:flex-row gap-2 md:gap-6 text-sm text-gray-500 font-medium">
-                  {profile.email && (
-                    <span className="flex items-center gap-1.5 justify-center md:justify-start">
-                      ✉️ {profile.email}
-                    </span>
-                  )}
-                  {profile.phone && (
-                    <span className="flex items-center gap-1.5 justify-center md:justify-start">
-                      📞 {profile.phone}
-                    </span>
-                  )}
-                </div>
-                {user?.role === 'customer' && address && (
-                  <div className="mt-3 text-sm text-gray-600 bg-gray-50/50 border border-gray-100 p-3 rounded-xl max-w-xl text-left">
-                    <span className="font-bold text-gray-800 flex items-center gap-1.5 mb-1 text-[11px] uppercase tracking-wider">
-                      📍 Default Address
-                    </span>
-                    <span className="font-semibold">{address.address_line1}</span>
-                    {address.area_name && <span className="text-xs text-gray-500 block mt-0.5">{address.area_name}, {address.city_name}</span>}
-                  </div>
-                )}
-              </div>
-            </div>
-            <Link 
-              to="/profile" 
-              className="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-2.5 border-2 border-[#00674F] text-[#00674F] hover:bg-[#00674F] hover:text-white font-extrabold rounded-xl transition-all duration-300 text-sm active:scale-95 shadow-sm"
-            >
-              ✏️ Edit Profile
-            </Link>
-          </div>
-        </Card>
-      )}
-
-      {error && (
-        <div className="bg-red-50 text-red-500 p-4 rounded-lg mb-6">
-          {error}
-        </div>
-      )}
-
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
-           {[1, 2, 3].map(i => (
-             <div key={i} className="bg-gray-200 h-48 rounded-xl"></div>
-           ))}
-        </div>
-      ) : bookings.length === 0 ? (
-        <Card className="text-center p-12">
-          <div className="text-gray-400 mb-4">
-            <svg className="w-16 h-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-          </div>
-          <h3 className="text-xl font-medium text-gray-900 mb-2">No bookings found</h3>
-          <p className="text-gray-500">
-            {user?.role === 'customer' 
-              ? 'You haven\'t booked any services yet.' 
-              : 'You have no assigned jobs at the moment.'}
-          </p>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {bookings.map((booking: any) => (
-            <Card 
-              key={booking.id} 
-              className="p-6 transition-all hover:scale-[1.01] hover:shadow-lg cursor-pointer border hover:border-[#00674F]"
-              onClick={() => setSelectedBooking(booking)}
-            >
-              <div className="flex justify-between items-start mb-4">
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${getStatusBadgeColor(booking.status)}`}>
-                  {booking.status.replace('_', ' ')}
-                </span>
-                <span className="text-sm text-gray-500 font-medium">
-                  {new Date(booking.scheduled_time).toLocaleDateString()}
-                </span>
-              </div>
-              
-              <div className="mb-4 bg-gray-50 p-3 rounded-lg border border-gray-100 flex justify-between items-center">
-                <div className="flex flex-col">
-                  <span className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Tracking ID</span>
-                  <span className="text-sm font-mono font-bold text-gray-800">{booking.id}</span>
-                </div>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigator.clipboard.writeText(booking.id);
-                    alert('Tracking ID copied to clipboard!');
-                  }}
-                  className="text-[#00674F] hover:text-[#00523f] p-2 hover:bg-[#00674F]/10 rounded-lg transition-colors"
-                  title="Copy Tracking ID"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-              </div>
-
-              <div className="mb-4">
-                <h4 className="font-semibold text-lg text-gray-800 mb-2">Requested Services</h4>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  {booking.items.map((item: any, idx: number) => (
-                    <li key={idx} className="flex justify-between border-b pb-1">
-                      <span>{item.quantity}x {item.service_name || 'Service'}</span>
-                      <span className="font-medium">Rs. {item.price}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              
-              {user?.role === 'provider' && booking.status !== 'completed' && booking.status !== 'cancelled' && (
-                <div className="mt-6 pt-4 border-t flex flex-wrap gap-2">
-                  {booking.status === 'assigned' && (
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        updateBookingStatus(booking.id, 'accepted');
-                      }}
-                      className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
-                    >
-                      Accept Job
-                    </button>
-                  )}
-                  {booking.status === 'accepted' && (
-                     <button 
-                       onClick={(e) => {
-                         e.stopPropagation();
-                         updateBookingStatus(booking.id, 'in_progress');
-                       }}
-                       className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700"
-                     >
-                       Start Work
-                     </button>
-                  )}
-                  {booking.status === 'in_progress' && (
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        updateBookingStatus(booking.id, 'completed');
-                      }}
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 w-full"
-                    >
-                      Mark Completed
-                    </button>
-                  )}
-                </div>
-              )}
-
-              <div className="mt-4 pt-3 border-t text-center">
-                <span className="text-xs font-semibold text-[#00674F] hover:underline">
-                  {user?.role === 'customer' ? 'Click to track live order status' : 'Click to view complete job details'}
-                </span>
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {/* Detailed Booking Modal */}
+      {/* Detailed Booking Modal Dialog (Redesigned Glassmorphic) */}
       {selectedBooking && (
         <div 
-          className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
           onClick={() => setSelectedBooking(null)}
         >
           <div 
-            className="bg-white rounded-2xl w-full max-w-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto shadow-2xl relative"
+            className="bg-white/95 backdrop-blur-md rounded-3xl w-full max-w-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-white/20 relative animate-slide-up"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Top brand line */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#00ffc4] via-[#00674F] to-yellow-400"></div>
+
             {/* Close Button */}
             <button 
               onClick={() => setSelectedBooking(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="absolute top-5 right-5 text-gray-400 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              <X size={20} />
             </button>
 
             {/* Modal Title */}
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-1">Order Details</h2>
-              <p className="text-sm text-gray-500 font-mono">Tracking ID: {selectedBooking.id}</p>
+            <div className="mb-6 border-b border-gray-100 pb-3">
+              <h2 className="text-2xl font-extrabold text-gray-900 mb-1">Order Details</h2>
+              <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Live tracking overview</p>
             </div>
 
             {/* Stepper Status Progress */}
             <div className="mb-8">
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Live Status Tracking</h3>
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Live Status Tracking</h3>
               {getStatusStepper(selectedBooking.status)}
             </div>
 
@@ -369,9 +443,11 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               {/* Service & Schedule */}
               <div className="space-y-4">
-                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Scheduled Date & Time</p>
-                  <p className="font-bold text-gray-900 text-sm">
+                <div className="bg-slate-50 p-4 rounded-2xl border border-gray-100">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                    <Clock size={12} className="text-[#00674F]" /> Scheduled Date & Time
+                  </p>
+                  <p className="font-extrabold text-gray-900 text-sm">
                     {new Date(selectedBooking.scheduled_time).toLocaleString('en-US', {
                       weekday: 'short', month: 'short', day: 'numeric',
                       hour: 'numeric', minute: '2-digit', hour12: true
@@ -379,35 +455,39 @@ export default function Dashboard() {
                   </p>
                 </div>
 
-                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Service Address</p>
-                  <p className="font-semibold text-gray-900 text-sm">
+                <div className="bg-slate-50 p-4 rounded-2xl border border-gray-100">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                    <MapPin size={12} className="text-[#00674F]" /> Service Address
+                  </p>
+                  <p className="font-bold text-gray-900 text-sm">
                     {selectedBooking.address_line1}
                   </p>
-                  <p className="text-xs text-gray-600 mt-1">
+                  <p className="text-xs text-gray-500 font-medium mt-1">
                     {selectedBooking.area_name}, {selectedBooking.city_name}
                   </p>
                 </div>
               </div>
 
               {/* Booking Summary / Items */}
-              <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 flex flex-col justify-between">
+              <div className="bg-slate-50 p-4 rounded-2xl border border-gray-100 flex flex-col justify-between">
                 <div>
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Requested Items</p>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                    <Package size={12} className="text-[#00674F]" /> Requested Items
+                  </p>
                   <ul className="text-xs text-gray-600 space-y-2 max-h-36 overflow-y-auto pr-1">
                     {selectedBooking.items.map((item: any, idx: number) => (
-                      <li key={idx} className="flex justify-between border-b pb-1">
-                        <span>{item.quantity}x {item.service_name || 'Service'}</span>
-                        <span className="font-medium">Rs. {item.price * item.quantity}</span>
+                      <li key={idx} className="flex justify-between border-b border-gray-200/50 pb-1.5">
+                        <span className="font-medium text-gray-700 capitalize">{item.quantity}x {item.service_name || 'Service'}</span>
+                        <span className="font-bold text-gray-900">Rs. {Number(item.price * item.quantity).toLocaleString()}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
                 
-                <div className="pt-3 border-t border-gray-200 mt-3 flex justify-between items-center">
-                  <span className="text-xs font-bold text-gray-500">Total Amount</span>
+                <div className="pt-3 border-t border-gray-250 mt-3 flex justify-between items-center">
+                  <span className="text-xs font-bold text-gray-400">Total Amount</span>
                   <span className="text-lg font-black text-[#00674F]">
-                    Rs. {selectedBooking.items.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0)}
+                    Rs. {Number(selectedBooking.items.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0)).toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -417,7 +497,7 @@ export default function Dashboard() {
             <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
               <button 
                 onClick={() => setSelectedBooking(null)}
-                className="px-6 py-2 bg-[#00674F] hover:bg-[#00523f] text-white rounded-xl font-bold text-sm transition-all duration-200"
+                className="px-6 py-2.5 bg-gradient-to-r from-[#00674F] to-[#009b77] hover:from-[#00523f] hover:to-[#00aa82] text-white rounded-xl font-bold text-xs shadow-md transition-all cursor-pointer uppercase tracking-wider hover:-translate-y-0.5 active:scale-95"
               >
                 Close
               </button>
