@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import API from '../utils/api';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Button } from '../Components/UI/Button';
 import { Input } from '../Components/UI/Input';
-import { Card } from '../Components/UI/Card';
 import { useData } from '../Context/DataContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../store/store';
+import { completeRegistration } from '../store/authSlice';
+import { ShieldCheck, User, MapPin, Search, Navigation } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const loadGoogleMapsScript = (callback: () => void) => {
@@ -29,6 +31,8 @@ const loadGoogleMapsScript = (callback: () => void) => {
 };
 
 export default function Register() {
+  const dispatch = useDispatch();
+  const { user: authUser } = useSelector((state: RootState) => state.auth);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
@@ -211,6 +215,11 @@ export default function Register() {
         longitude
       });
 
+      const updatedUser = authUser 
+        ? { ...authUser, email: email.trim() || authUser.email }
+        : { id: '', email: email.trim(), role: 'customer' };
+      dispatch(completeRegistration({ user: updatedUser }));
+
       toast.success('Registration completed successfully!');
       navigate(redirectPath);
     } catch (err: any) {
@@ -221,15 +230,30 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[85vh] bg-gray-50 py-10">
-      <Card className="w-full max-w-2xl p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#012218] via-[#003B2D] to-[#012218] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden antialiased">
+      {/* Animated GPU background blobs */}
+      <div 
+        className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#009b77]/10 rounded-full blur-3xl pointer-events-none"
+        style={{ transform: 'translate3d(0,0,0)', willChange: 'transform' }}
+      ></div>
+      <div 
+        className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-yellow-500/5 rounded-full blur-3xl pointer-events-none"
+        style={{ transform: 'translate3d(0,0,0)', willChange: 'transform' }}
+      ></div>
+      
+      {/* Custom mesh grids */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none"></div>
+
+      <div className="relative w-full max-w-2xl bg-white/95 backdrop-blur-xl border border-white/20 p-8 sm:p-10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-10">
+        
+        {/* Registration Header */}
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-[#00674F] mb-2">Complete Profile</h2>
-          <p className="text-[#878787]">Tell us a bit more about yourself to set up your account</p>
+          <h2 className="text-3xl font-extrabold text-gray-900 mb-2 tracking-tight">Complete Registration</h2>
+          <p className="text-gray-500 text-sm">Tell us a bit more about yourself to set up your account</p>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-500 p-3 rounded-lg mb-6 text-sm text-center animate-fade-in">
+          <div className="bg-red-50 border border-red-200 text-red-600 p-3.5 rounded-xl mb-6 text-xs text-center font-medium animate-fade-in">
              {error}
           </div>
         )}
@@ -237,56 +261,115 @@ export default function Register() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           {/* Personal Information */}
           <div className="flex flex-col gap-4">
-            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Personal Information</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <Input label="First Name" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-              <Input label="Last Name" required value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            <div className="flex items-center gap-2 border-b border-gray-150 pb-2">
+              <User size={18} className="text-[#00674F]" />
+              <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Personal Information</h3>
             </div>
-            <Input label="Email Address (Optional)" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input 
+                label="First Name" 
+                required 
+                value={firstName} 
+                onChange={(e) => setFirstName(e.target.value)}
+                className="h-11 bg-white/60 focus:bg-white rounded-xl text-sm"
+              />
+              <Input 
+                label="Last Name" 
+                required 
+                value={lastName} 
+                onChange={(e) => setLastName(e.target.value)}
+                className="h-11 bg-white/60 focus:bg-white rounded-xl text-sm"
+              />
+            </div>
+            
+            <Input 
+              label="Email Address (Optional)" 
+              type="email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)}
+              className="h-11 bg-white/60 focus:bg-white rounded-xl text-sm"
+            />
           </div>
 
           {/* Address & Location */}
           <div className="flex flex-col gap-4">
-            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Address & Location</h3>
-            <Input label="Address Details" required value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} placeholder="House #, Street name" />
+            <div className="flex items-center gap-2 border-b border-gray-150 pb-2">
+              <MapPin size={18} className="text-[#00674F]" />
+              <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Address & Location</h3>
+            </div>
+            
+            <Input 
+              label="Address Details" 
+              required 
+              value={addressLine1} 
+              onChange={(e) => setAddressLine1(e.target.value)} 
+              placeholder="House #, Street name, Block"
+              className="h-11 bg-white/60 focus:bg-white rounded-xl text-sm"
+            />
           </div>
 
           {/* Map Location Picker */}
           <div className="flex flex-col gap-3">
-            <label className="text-sm font-semibold text-[#878787]">Pin Exact Location on Map</label>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+              <span>Pin Exact Location on Map</span>
+              <span className="text-red-500">*</span>
+            </label>
             
             {/* Search Location Bar */}
-            <div className="flex gap-2">
-              <input 
-                type="text" 
-                placeholder="Search location on map..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-[#00674F] h-10"
-              />
-              <Button type="button" onClick={handleSearchLocation} className="h-10 px-4">Search</Button>
+            <div className="flex gap-2 mb-1">
+              <div className="relative flex-1">
+                <input 
+                  type="text" 
+                  placeholder="Search location on map..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#00674F]/20 focus:border-[#00674F] text-sm bg-white/60 focus:bg-white transition-all h-11"
+                />
+              </div>
+              <button 
+                type="button" 
+                onClick={handleSearchLocation} 
+                className="h-11 px-6 bg-[#00674F] hover:bg-[#005440] text-white font-bold rounded-xl text-sm transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-[#00674F]/10 active:scale-98"
+              >
+                <Search size={16} />
+                <span>Search</span>
+              </button>
             </div>
 
             {/* Map Container */}
             <div 
               ref={mapRef} 
-              className="w-full h-64 rounded-xl border border-gray-300 overflow-hidden shadow-inner bg-gray-100" 
+              className="w-full h-64 rounded-2xl border border-gray-200 overflow-hidden shadow-inner bg-gray-100" 
             />
 
             {/* Current Location Button */}
-            <Button 
+            <button 
               type="button" 
               onClick={handleCurrentLocation} 
-              variant="outline" 
-              className="w-full flex items-center justify-center gap-2 border-dashed border-[#00674F] text-[#00674F] hover:bg-[#00674F]/5 h-10"
+              className="w-full flex items-center justify-center gap-2 border border-dashed border-[#00674F] text-[#00674F] hover:bg-[#00674F]/5 rounded-xl font-bold text-xs py-3 transition-all duration-300 active:scale-98 cursor-pointer"
             >
-              {isLocating ? 'Locating...' : '📍 Use Current Location'}
-            </Button>
+              <Navigation size={14} className={isLocating ? "animate-spin" : ""} />
+              <span>{isLocating ? 'Locating...' : 'Use Current Location'}</span>
+            </button>
           </div>
 
-          <Button type="submit" className="w-full text-lg mt-4" isLoading={loading}>Complete Registration</Button>
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="w-full h-12 bg-gradient-to-r from-[#00674F] to-[#009b77] hover:from-[#005440] hover:to-[#008263] text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-[0_4px_14px_0_rgba(0,103,79,0.3)] hover:shadow-[0_6px_20px_rgba(0,103,79,0.2)] active:scale-98 cursor-pointer mt-4"
+          >
+            {loading ? 'Completing...' : 'Complete Registration'}
+          </button>
         </form>
-      </Card>
+
+        {/* Secured stamp banner */}
+        <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-center gap-2 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+          <ShieldCheck size={14} className="text-[#00674F]" />
+          <span>Secured by Murammat.pk</span>
+        </div>
+
+      </div>
     </div>
   );
 }

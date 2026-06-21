@@ -27,7 +27,7 @@ const getStoredUser = (): User | null => {
 const initialState: AuthState = {
   user: getStoredUser(),
   token: localStorage.getItem('token') || null,
-  isAuthenticated: !!localStorage.getItem('token'),
+  isAuthenticated: !!localStorage.getItem('token') && localStorage.getItem('profile_completed') === 'true',
   isLoading: false,
 };
 
@@ -38,13 +38,14 @@ const authSlice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
-    loginSuccess: (state, action: PayloadAction<{ user: User; token: string }>) => {
+    loginSuccess: (state, action: PayloadAction<{ user: User; token: string; profile_completed: boolean }>) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
-      state.isAuthenticated = true;
+      state.isAuthenticated = action.payload.profile_completed;
       state.isLoading = false;
       localStorage.setItem('token', action.payload.token);
       localStorage.setItem('user', JSON.stringify(action.payload.user));
+      localStorage.setItem('profile_completed', action.payload.profile_completed ? 'true' : 'false');
     },
     logout: (state) => {
       state.user = null;
@@ -53,13 +54,20 @@ const authSlice = createSlice({
       state.isLoading = false;
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('profile_completed');
     },
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
       localStorage.setItem('user', JSON.stringify(action.payload));
+    },
+    completeRegistration: (state, action: PayloadAction<{ user: User }>) => {
+      state.isAuthenticated = true;
+      state.user = action.payload.user;
+      localStorage.setItem('profile_completed', 'true');
+      localStorage.setItem('user', JSON.stringify(action.payload.user));
     }
   },
 });
 
-export const { setLoading, loginSuccess, logout, setUser } = authSlice.actions;
+export const { setLoading, loginSuccess, logout, setUser, completeRegistration } = authSlice.actions;
 export default authSlice.reducer;

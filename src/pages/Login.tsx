@@ -3,9 +3,8 @@ import { useDispatch } from 'react-redux';
 import { loginSuccess, setLoading } from '../store/authSlice';
 import API from '../utils/api';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Button } from '../Components/UI/Button';
 import { Input } from '../Components/UI/Input';
-import { Card } from '../Components/UI/Card';
+import { ShieldCheck, Phone, ArrowLeft, KeyRound } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Login() {
@@ -53,7 +52,8 @@ export default function Login() {
           // Profile exists — log in successfully and redirect to home/dashboard
           dispatch(loginSuccess({
             user: { id: res.data.user.id, email: res.data.user.email, phone: res.data.user.phone, role: 'customer' },
-            token
+            token,
+            profile_completed: true
           }));
           toast.success('Logged in successfully!');
           navigate(redirectPath);
@@ -61,7 +61,8 @@ export default function Login() {
           // Profile doesn't exist — redirect to register page to complete profile
           dispatch(loginSuccess({
             user: { id: res.data.user.id, email: res.data.user.email, phone: res.data.user.phone, role: 'customer' },
-            token
+            token,
+            profile_completed: false
           }));
           toast.success('Please complete your profile details.');
           navigate(`/register?redirect=${encodeURIComponent(redirectPath)}`);
@@ -87,23 +88,46 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[80vh] bg-gray-50">
-      <Card className="w-full max-w-md p-8">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-[#00674F] mb-2">Customer Login</h2>
-          <p className="text-[#878787]">
-            {step === 1 ? 'Enter your phone number to continue' : 'Enter the verification code sent to your phone'}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#012218] via-[#003B2D] to-[#012218] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden antialiased">
+      {/* Animated GPU background blobs */}
+      <div 
+        className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#009b77]/10 rounded-full blur-3xl pointer-events-none"
+        style={{ transform: 'translate3d(0,0,0)', willChange: 'transform' }}
+      ></div>
+      <div 
+        className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-yellow-500/5 rounded-full blur-3xl pointer-events-none"
+        style={{ transform: 'translate3d(0,0,0)', willChange: 'transform' }}
+      ></div>
+      
+      {/* Custom mesh grids */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none"></div>
+
+      <div className="relative w-full max-w-md bg-white/95 backdrop-blur-xl border border-white/20 px-8 py-10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-10">
+        
+        {/* Brand header */}
+        <div className="text-center mb-8 flex flex-col items-center">
+          <div className="w-16 h-16 bg-[#00674F]/10 rounded-2xl flex items-center justify-center mb-4 text-[#00674F] shadow-inner">
+            {step === 1 ? <Phone size={28} /> : <KeyRound size={28} />}
+          </div>
+          
+          <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight mb-2">
+            {step === 1 ? 'Verify Your Phone' : 'Enter Verification Code'}
+          </h2>
+          <p className="text-gray-500 text-xs max-w-xs mx-auto leading-relaxed">
+            {step === 1 
+              ? 'Enter your Pakistani phone number to request a secure authentication code.' 
+              : 'Please type the 6-digit confirmation code we sent to your mobile.'}
           </p>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-500 p-3 rounded-lg mb-6 text-sm text-center animate-fade-in">
+          <div className="bg-red-50 border border-red-200 text-red-600 p-3.5 rounded-xl mb-6 text-xs text-center font-medium animate-fade-in">
              {error}
           </div>
         )}
 
         {step === 1 ? (
-          <form onSubmit={handlePhoneSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handlePhoneSubmit} className="flex flex-col gap-5">
             <Input 
               label="Phone Number"
               type="tel" 
@@ -111,15 +135,18 @@ export default function Login() {
               value={phone}
               onChange={handlePhoneChange}
               required
+              className="h-12 bg-white/60 focus:bg-white rounded-xl text-sm"
             />
-            <div className="mt-4">
-              <Button type="submit" className="w-full text-lg">
-                Continue
-              </Button>
-            </div>
+            
+            <button 
+              type="submit" 
+              className="w-full h-12 bg-gradient-to-r from-[#00674F] to-[#009b77] hover:from-[#005440] hover:to-[#008263] text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-[0_4px_14px_0_rgba(0,103,79,0.3)] hover:shadow-[0_6px_20px_rgba(0,103,79,0.2)] active:scale-98 cursor-pointer"
+            >
+              Continue
+            </button>
           </form>
         ) : (
-          <form onSubmit={handleOtpVerify} className="flex flex-col gap-4">
+          <form onSubmit={handleOtpVerify} className="flex flex-col gap-5">
             <Input 
               label="Verification Code (OTP)"
               type="text" 
@@ -127,26 +154,39 @@ export default function Login() {
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
               required
+              className="h-12 bg-white/60 focus:bg-white rounded-xl text-sm tracking-[0.25em] text-center font-bold"
             />
-            <div className="mt-4 flex gap-4">
-              <Button 
+            
+            <div className="flex gap-3">
+              <button 
                 type="button" 
-                variant="outline" 
-                className="w-1/3" 
                 onClick={(e) => {
                   e.preventDefault();
                   setStep(1);
                 }}
+                className="w-1/3 h-12 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold rounded-xl text-sm transition-all flex items-center justify-center gap-1.5 active:scale-98 cursor-pointer"
               >
-                Back
-              </Button>
-              <Button type="submit" className="flex-1 text-lg">
-                Verify
-              </Button>
+                <ArrowLeft size={16} />
+                <span>Back</span>
+              </button>
+              
+              <button 
+                type="submit" 
+                className="flex-1 h-12 bg-gradient-to-r from-[#00674F] to-[#009b77] hover:from-[#005440] hover:to-[#008263] text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-[0_4px_14px_0_rgba(0,103,79,0.3)] hover:shadow-[0_6px_20px_rgba(0,103,79,0.2)] active:scale-98 cursor-pointer"
+              >
+                Verify & Sign In
+              </button>
             </div>
           </form>
         )}
-      </Card>
+        
+        {/* Brand quality stamp */}
+        <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-center gap-2 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+          <ShieldCheck size={14} className="text-[#00674F]" />
+          <span>Secured by Murammat.pk</span>
+        </div>
+
+      </div>
     </div>
   );
 }

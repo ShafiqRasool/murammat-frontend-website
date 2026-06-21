@@ -5,22 +5,22 @@ import { Link } from 'react-router-dom';
 export default function WhyMurammat() {
   const features = [
     {
-      icon: <ShieldCheck size={36} className="text-[#00ffc4] group-hover:text-white transition-colors duration-300" />,
+      icon: <ShieldCheck size={36} className="text-[#00674F] group-hover:text-white transition-colors duration-300" />,
       title: 'Verified Professionals',
       description: 'Every technician undergoes rigorous background screening and practical skill verification to guarantee top-notch quality and security.'
     },
     {
-      icon: <Clock size={36} className="text-[#00ffc4] group-hover:text-white transition-colors duration-300" />,
+      icon: <Clock size={36} className="text-[#00674F] group-hover:text-white transition-colors duration-300" />,
       title: 'On-Time Service',
       description: 'We respect your schedule. Our experts arrive on time, equipped with advanced tools to complete your job quickly and efficiently.'
     },
     {
-      icon: <Wrench size={36} className="text-[#00ffc4] group-hover:text-white transition-colors duration-300" />,
+      icon: <Wrench size={36} className="text-[#00674F] group-hover:text-white transition-colors duration-300" />,
       title: 'Expert Craftsmanship',
       description: 'From simple fixture repairs to complex corporate maintenance, we deliver precise results using cutting-edge equipment.'
     },
     {
-      icon: <ThumbsUp size={36} className="text-[#00ffc4] group-hover:text-white transition-colors duration-300" />,
+      icon: <ThumbsUp size={36} className="text-[#00674F] group-hover:text-white transition-colors duration-300" />,
       title: 'Post-Service Guarantee',
       description: 'Your satisfaction is our absolute priority. We stand by our work and offer a post-service guarantee to keep you worry-free.'
     }

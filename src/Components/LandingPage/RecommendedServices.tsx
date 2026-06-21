@@ -8,6 +8,7 @@ export interface RecommendedService {
   name: string;
   image_url?: string;
   small_description?: string;
+  is_top_service?: boolean;
 }
 
 interface RecommendedServicesProps {
@@ -27,8 +28,10 @@ const RecommendedServices: React.FC<RecommendedServicesProps> = ({
     const fetchServices = async () => {
       try {
         const response = await API.get('/public/services');
+        const allServices = Array.isArray(response.data) ? response.data : [];
+        const topServices = allServices.filter((s: RecommendedService) => s.is_top_service === true);
         // Get up to 8 services for the homepage
-        setServices(response.data.slice(0, 8));
+        setServices(topServices.slice(0, 8));
       } catch (error) {
         console.error('Failed to fetch services:', error);
       } finally {
