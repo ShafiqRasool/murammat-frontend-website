@@ -183,7 +183,7 @@ const Footer: React.FC = () => {
         <div className="pt-8 border-t border-gray-800 flex flex-col lg:flex-row justify-between items-center gap-6">
 
           <div className="text-xs text-gray-500 text-center lg:text-left">
-            Copyright © 2024 - 2026 Murammat.pk. Murammat.pk logo and related marks are registered Trademarks of Murammat.
+            Copyright © 2024 - 2026 Murammat.pk. Developed and Owned by Muhammad Shafiq. All Rights Reserved. Murammat.pk logo and related marks are registered Trademarks of Murammat.
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-6">
