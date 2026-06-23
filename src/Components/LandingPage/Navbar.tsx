@@ -35,7 +35,7 @@ const Navbar = () => {
           {/* 1. Logo Section (Always Visible) */}
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="flex items-center gap-2">
-              <img src="/logo.png" alt="Murammat.pk" className="h-10 w-auto object-contain" />
+              <img src="/logo.png" alt="Murammat.pk" className="h-10 w-14 object-contain" />
               <span className="text-gray-900 font-bold tracking-tight text-xl sm:text-2xl">
                 Murammat<span className="text-[#00674F]">.pk</span>
               </span>

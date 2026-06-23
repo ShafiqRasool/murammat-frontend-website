@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Phone } from 'lucide-react';
+import { Phone } from 'lucide-react';
+import API from '../../utils/api';
 
 // Import your actual images from your assets folder here
 import slide1 from '../../assets/LandingPage/cleaning-services.jpg';
@@ -10,22 +11,49 @@ interface CategoryHeroProps {
   heading?: string;
   subheading?: string;
   images?: string[];
+  parentId?: string | null;
 }
 
 const Hero: React.FC<CategoryHeroProps> = ({ 
   heading = "Home Maintenance", // Default fallback if no category is clicked
   subheading = "Connecting customers and technicians for quick, safe, and affordable bookings.",
-  images = [slide1, slide2, slide3] 
+  images = [slide1, slide2, slide3],
+  parentId = null
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [sliderImages, setSliderImages] = useState<string[]>(images);
 
   // Auto-sliding effect every 4 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % sliderImages.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, [images.length]);
+  }, [sliderImages.length]);
+
+  // Load custom categories images from backend dynamically
+  useEffect(() => {
+    const fetchCategoryImages = async () => {
+      if (!parentId) return;
+      try {
+        const response = await API.get('/public/parent-categories');
+        const currentParent = response.data.find((p: any) => p.id === parentId);
+        if (currentParent && currentParent.image_urls && currentParent.image_urls.length > 0) {
+          const urls = currentParent.image_urls.map((url: string) => {
+            if (url.startsWith('http')) return url;
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+            const baseUrl = apiUrl.replace('/api', '');
+            return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+          });
+          setSliderImages(urls);
+          setCurrentImageIndex(0);
+        }
+      } catch (error) {
+        console.error('Failed to fetch parent category images for slider:', error);
+      }
+    };
+    fetchCategoryImages();
+  }, [parentId]);
 
   return (
     <section className="relative w-full min-h-[500px] bg-[#FAFAFA] flex flex-col md:flex-row overflow-hidden font-sans">
@@ -55,18 +83,7 @@ const Hero: React.FC<CategoryHeroProps> = ({
             <Phone size={24} fill="currentColor" className="text-[#00674F]" />
           </a>
         </div>
-
-        {/* Search Bar */}
-        <div className="relative max-w-md">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-[#878787]" />
-          </div>
-          <input
-            type="text"
-            className="block w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl leading-5 bg-white text-gray-900 placeholder-[#878787] focus:outline-none focus:ring-2 focus:ring-[#00674F] focus:border-[#00674F] sm:text-md transition-all shadow-sm"
-            placeholder="Search specific service..."
-          />
-        </div>
+        
       </div>
 
       {/* Right Image Slider Area */}
@@ -79,7 +96,7 @@ const Hero: React.FC<CategoryHeroProps> = ({
         ></div>
 
         {/* Dynamic Image Slider */}
-        {images.map((img, index) => (
+        {sliderImages.map((img, index) => (
           <div
             key={index}
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
@@ -98,7 +115,7 @@ const Hero: React.FC<CategoryHeroProps> = ({
 
         {/* Slider Navigation Dots */}
         <div className="absolute bottom-6 left-1/2 md:left-[60%] transform -translate-x-1/2 flex space-x-3 z-20">
-          {images.map((_, index) => (
+          {sliderImages.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentImageIndex(index)}

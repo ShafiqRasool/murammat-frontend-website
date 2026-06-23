@@ -100,7 +100,7 @@ const Footer: React.FC = () => {
           {/* Column 1: Brand & About */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-6 cursor-pointer">
-              <img src="/logo.png" alt="Murammat.pk" className="h-10 w-auto object-contain bg-white rounded-md p-1" />
+              <img src="/logo.png" alt="Murammat.pk" className="h-10 w-14 object-contain bg-white rounded-md p-1" />
               <span className="text-2xl font-bold text-white tracking-tight">
                 Murammat<span className="text-[#00674F]">.pk</span>
               </span>

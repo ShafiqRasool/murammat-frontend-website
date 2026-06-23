@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, CheckCircle, Map, ShieldCheck, Star, Banknote } from 'lucide-react';
+import { Search, MapPin, CheckCircle, Map, ShieldCheck, Star, Banknote, ChevronDown } from 'lucide-react';
 import API from '../../utils/api';
 
 interface FormData {
@@ -161,6 +161,15 @@ const HeroBooking: React.FC = () => {
         .animate-text-shimmer {
           background-size: 200% auto;
           animation: text-shimmer 6s linear infinite;
+        }
+        @keyframes scroll-down-dot {
+          0% { transform: translateY(0); opacity: 0; }
+          15% { opacity: 1; }
+          65% { transform: translateY(14px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 0; }
+        }
+        .animate-scroll-down-dot {
+          animation: scroll-down-dot 1.8s cubic-bezier(0.15, 0.41, 0.69, 0.94) infinite;
         }
       `}</style>
 
@@ -396,6 +405,29 @@ const HeroBooking: React.FC = () => {
             </form>
           </div>
         </div>
+      </div>
+
+      {/* Downward indicator pointing to top-services */}
+      <div 
+        onClick={() => {
+          document.getElementById('top-services')?.scrollIntoView({ behavior: 'smooth' });
+        }}
+        className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center cursor-pointer z-20 group/scroll"
+      >
+        {/* Text Badge with glassmorphism styling */}
+        <div className="mb-3.5 px-4 py-1.5 rounded-full bg-slate-950/40 backdrop-blur-md border border-white/5 group-hover/scroll:border-[#00ffc4]/30 group-hover/scroll:bg-slate-950/70 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
+          <span className="text-[9px] font-black uppercase tracking-[0.28em] text-[#00ffc4] group-hover/scroll:text-white transition-colors duration-300">
+            Browse Our Services
+          </span>
+        </div>
+
+        {/* Vertical Mouse Scroll Wheel Simulation */}
+        <div className="w-[28px] h-[48px] rounded-full border-2 border-[#00ffc4]/30 bg-slate-950/20 backdrop-blur-[2px] flex justify-center p-1.5 shadow-[0_0_15px_rgba(0,255,196,0.05)] group-hover/scroll:border-[#00ffc4]/80 group-hover/scroll:shadow-[0_0_20px_rgba(0,255,196,0.25)] transition-all duration-300">
+          <div className="w-1.5 h-3 bg-gradient-to-b from-[#00ffc4] to-[#009b77] rounded-full animate-scroll-down-dot" />
+        </div>
+
+        {/* Small bouncing arrows pointing downward */}
+        <ChevronDown className="text-[#00ffc4]/40 group-hover/scroll:text-[#00ffc4] mt-2 w-4 h-4 animate-bounce duration-1000" />
       </div>
 
       {/* --- LOCATION PERMISSION POPUP --- */}

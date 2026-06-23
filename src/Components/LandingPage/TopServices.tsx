@@ -61,7 +61,7 @@ const TopServices: React.FC = () => {
   };
 
   return (
-    <section className="w-full bg-[#FAFAFA] py-16 px-4 sm:px-6 lg:px-8 border-t border-gray-100">
+    <section id="top-services" className="w-full bg-[#FAFAFA] py-16 px-4 sm:px-6 lg:px-8 border-t border-gray-100">
       <div className="max-w-7xl mx-auto">
         
         {/* Section Header */}

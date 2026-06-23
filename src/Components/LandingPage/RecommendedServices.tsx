@@ -65,15 +65,15 @@ const RecommendedServices: React.FC<RecommendedServicesProps> = ({
         </div>
 
         {/* Dynamic Image Cards Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 justify-center">
+        <div className="flex flex-wrap justify-center gap-4 md:gap-6">
           
           {loading ? (
             // Skeleton loaders
             Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="animate-pulse bg-gray-200 rounded-2xl h-[250px] sm:h-[280px] md:h-[300px]"></div>
+              <div key={i} className="animate-pulse bg-gray-200 rounded-2xl h-[250px] sm:h-[280px] md:h-[300px] w-[calc(50%-8px)] sm:w-[240px] md:w-[260px] lg:w-[280px]"></div>
             ))
           ) : services.length === 0 ? (
-            <div className="col-span-full text-center text-gray-500 py-10">
+            <div className="w-full text-center text-gray-500 py-10">
               No services found.
             </div>
           ) : (
@@ -81,7 +81,7 @@ const RecommendedServices: React.FC<RecommendedServicesProps> = ({
               <div 
                 key={service.id} 
                 onClick={() => navigate(`/services/${service.id}`)}
-                className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-[250px] sm:h-[280px] md:h-[300px] flex flex-col bg-gray-200"
+                className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-[250px] sm:h-[280px] md:h-[300px] flex flex-col bg-gray-200 w-[calc(50%-8px)] sm:w-[240px] md:w-[260px] lg:w-[280px]"
               >
               {/* Background Image with smooth zoom effect on hover */}
               <div 
