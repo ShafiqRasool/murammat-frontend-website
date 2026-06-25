@@ -265,7 +265,7 @@ const NotifyForm: React.FC = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px' }}>
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 w-full">
       <input
         type="email"
         required
@@ -275,7 +275,6 @@ const NotifyForm: React.FC = () => {
         onBlur={() => setFocused(false)}
         placeholder="your@email.com"
         style={{
-          flex: 1,
           padding: '13px 18px',
           borderRadius: '12px',
           border: `1px solid ${focused ? 'rgba(167,209,198,0.6)' : 'rgba(255,255,255,0.15)'}`,
@@ -285,6 +284,7 @@ const NotifyForm: React.FC = () => {
           outline: 'none',
           transition: 'border-color 0.2s',
         }}
+        className="w-full sm:flex-1"
       />
       <button
         type="submit"
@@ -301,6 +301,7 @@ const NotifyForm: React.FC = () => {
           transition: 'opacity 0.15s, transform 0.15s',
           boxShadow: '0 4px 16px rgba(0,200,150,0.3)',
         }}
+        className="w-full sm:w-auto"
         onMouseEnter={e => {
           (e.currentTarget as HTMLButtonElement).style.opacity = '0.88';
           (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';

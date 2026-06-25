@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Phone } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Phone, ArrowLeft } from 'lucide-react';
 import API from '../../utils/api';
 
 // Import your actual images from your assets folder here
@@ -20,6 +21,7 @@ const Hero: React.FC<CategoryHeroProps> = ({
   images = [slide1, slide2, slide3],
   parentId = null
 }) => {
+  const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [sliderImages, setSliderImages] = useState<string[]>(images);
 
@@ -60,6 +62,15 @@ const Hero: React.FC<CategoryHeroProps> = ({
       
       {/* Left Content Area */}
       <div className="w-full md:w-1/2 px-6 md:px-16 py-16 flex flex-col justify-center z-10">
+        {/* Back Button */}
+        <button 
+          onClick={() => navigate(-1)} 
+          className="mb-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/5 hover:bg-black/10 border border-black/10 text-gray-700 hover:text-gray-900 transition-all duration-300 shadow-sm group hover:-translate-y-0.5 w-fit cursor-pointer font-sans"
+        >
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          <span className="text-xs font-bold uppercase tracking-wider">Back</span>
+        </button>
+
         <h1 className="text-5xl md:text-6xl font-black text-gray-900 leading-tight mb-4">
           {heading} <br/>
           <span className="text-[#00674F]">Made Easy!!</span>

@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import API from '../utils/api';
-import { Calendar, User, ArrowLeft } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Clock } from 'lucide-react';
+
+const getImageUrl = (url?: string) => {
+  if (!url) return '';
+  if (url.startsWith('http')) return url;
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+  const baseUrl = apiUrl.replace('/api', '');
+  return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+};
 
 export default function BlogDetails() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [blog, setBlog] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -26,63 +35,116 @@ export default function BlogDetails() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-[#FAFAFA]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00674F]"></div>
+      <div className="w-full min-h-screen bg-gradient-to-br from-[#012218] via-[#003B2D] to-[#012218] flex items-center justify-center">
+        <div className="p-20 text-center animate-pulse text-[#00ffc4] font-bold text-lg">
+          Loading Blog Details...
+        </div>
       </div>
     );
   }
 
   if (error || !blog) {
     return (
-      <div className="flex flex-col justify-center items-center min-h-[60vh] bg-[#FAFAFA] text-center px-4">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">{error}</h2>
-        <Link to="/blog" className="text-[#00674F] hover:underline font-semibold flex items-center">
-          <ArrowLeft size={16} className="mr-2" /> Back to Blogs
-        </Link>
+      <div className="w-full min-h-screen bg-gradient-to-br from-[#012218] via-[#003B2D] to-[#012218] flex flex-col justify-center items-center text-center px-4">
+        <h2 className="text-3xl font-extrabold text-white mb-6 tracking-tight">{error}</h2>
+        <button 
+          onClick={() => navigate('/blog')} 
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-[#00ffc4]/15 border border-white/10 hover:border-[#00ffc4]/30 text-emerald-100 hover:text-white transition-all duration-300 shadow-sm"
+        >
+          <ArrowLeft size={16} />
+          <span className="text-xs font-bold uppercase tracking-wider">Back to Blogs</span>
+        </button>
       </div>
     );
   }
 
-  return (
-    <div className="bg-[#FAFAFA] min-h-screen py-16">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in">
-        
-        <Link to="/blog" className="inline-flex items-center text-gray-500 hover:text-[#00674F] mb-8 font-medium transition-colors">
-          <ArrowLeft size={18} className="mr-2" /> Back to all posts
-        </Link>
+  const readingTime = blog.content ? `${Math.max(1, Math.ceil(blog.content.split(/\s+/).length / 200))} min read` : '1 min read';
 
-        <article className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+  return (
+    <div className="w-full min-h-screen bg-gradient-to-br from-[#012218] via-[#003B2D] to-[#012218] text-gray-800 flex flex-col antialiased relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
+      <style>{`
+        @keyframes float-detail-blob {
+          0%, 100% { transform: translate3d(0px, 0px, 0) scale(1); }
+          50% { transform: translate3d(-30px, 20px, 0) scale(1.08); }
+        }
+        @keyframes float-detail-blob-2 {
+          0%, 100% { transform: translate3d(0px, 0px, 0) scale(1.05); }
+          50% { transform: translate3d(20px, -30px, 0) scale(0.92); }
+        }
+        .animate-detail-blob {
+          animation: float-detail-blob 12s ease-in-out infinite;
+          will-change: transform;
+        }
+        .animate-detail-blob-2 {
+          animation: float-detail-blob-2 15s ease-in-out infinite;
+          will-change: transform;
+        }
+      `}</style>
+
+      {/* Drifting gradient blur background elements */}
+      <div className="absolute top-[10%] left-[-5%] w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none z-0 animate-detail-blob"></div>
+      <div className="absolute bottom-[10%] right-[-5%] w-[450px] h-[450px] bg-yellow-500/5 rounded-full blur-3xl pointer-events-none z-0 animate-detail-blob-2"></div>
+
+      <div className="max-w-4xl mx-auto w-full relative z-10">
+        
+        {/* Back Navigation Button */}
+        <button 
+          onClick={() => navigate('/blog')} 
+          className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-[#00ffc4]/15 border border-white/10 hover:border-[#00ffc4]/30 text-emerald-100 hover:text-white transition-all duration-300 shadow-sm group hover:-translate-y-0.5"
+        >
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          <span className="text-xs font-bold uppercase tracking-wider">Back to Blogs</span>
+        </button>
+
+        <article className="bg-white/95 backdrop-blur-lg rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden relative">
+          {/* Colorful top brand gradient line */}
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#00ffc4] via-[#00674F] to-yellow-400"></div>
+
           {/* Header Image */}
           {blog.image_url && (
-            <div className="w-full h-[400px] bg-gray-100 relative">
+            <div className="w-full h-[300px] md:h-[450px] bg-slate-900 relative overflow-hidden">
               <img 
-                src={blog.image_url} 
+                src={getImageUrl(blog.image_url)} 
                 alt={blog.title} 
                 className="w-full h-full object-cover" 
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none"></div>
             </div>
           )}
 
-          <div className="p-8 md:p-12">
-            {/* Meta info */}
-            <div className="flex flex-wrap items-center text-sm text-gray-500 mb-6 space-x-6">
-              <span className="flex items-center"><Calendar size={16} className="mr-2 text-[#00674F]" /> {new Date(blog.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-              <span className="flex items-center"><User size={16} className="mr-2 text-[#00674F]" /> {blog.author || 'Admin'}</span>
+          <div className="p-6 sm:p-10 md:p-14">
+            {/* Meta info tags */}
+            <div className="flex flex-wrap items-center text-xs font-semibold text-gray-500 gap-4 mb-6">
+              <span className="flex items-center bg-gray-100 px-3 py-1.5 rounded-full text-gray-650">
+                <Calendar size={13} className="mr-1.5 text-[#00674F]" /> 
+                {new Date(blog.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </span>
+              <span className="flex items-center bg-gray-100 px-3 py-1.5 rounded-full text-gray-650">
+                <User size={13} className="mr-1.5 text-[#00674F]" /> 
+                {blog.author || 'Admin'}
+              </span>
+              <span className="flex items-center bg-emerald-50 text-[#00674F] border border-emerald-100 px-3 py-1.5 rounded-full">
+                <Clock size={13} className="mr-1.5 text-[#00674F]" /> 
+                {readingTime}
+              </span>
             </div>
 
             {/* Title */}
-            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-8 leading-tight">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-8 leading-tight tracking-tight">
               {blog.title}
             </h1>
 
-            {/* Content */}
-            <div className="prose prose-lg max-w-none text-gray-700">
-              {/* Splitting by newline to create paragraphs for simple text rendering */}
-              {blog.content.split('\n').map((paragraph: string, index: number) => (
-                <p key={index} className="mb-4 leading-relaxed">
-                  {paragraph}
-                </p>
-              ))}
+            {/* Content paragraph system */}
+            <div className="prose prose-lg max-w-none text-gray-750 font-sans leading-relaxed space-y-6">
+              {blog.content.split('\n').map((paragraph: string, index: number) => {
+                const trimmed = paragraph.trim();
+                if (!trimmed) return null;
+                return (
+                  <p key={index} className="text-base md:text-lg text-gray-700 leading-relaxed">
+                    {trimmed}
+                  </p>
+                );
+              })}
             </div>
           </div>
         </article>

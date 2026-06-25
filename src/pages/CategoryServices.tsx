@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import API from '../utils/api';
 
 interface SubCategory {
@@ -54,9 +55,18 @@ const CategoryServices: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-[#00674F] text-white py-12 px-4 text-center">
-        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Services</h1>
-        <p className="text-white/80">Choose from our wide range of services</p>
+      <div className="bg-[#00674F] text-white py-12 px-4 relative">
+        <div className="max-w-7xl mx-auto relative flex flex-col items-center justify-center">
+          <button 
+            onClick={() => navigate(-1)} 
+            className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-2 text-white/80 hover:text-white transition-all group cursor-pointer"
+          >
+            <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+            <span className="text-sm font-semibold hidden sm:inline">Back</span>
+          </button>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2 text-center">Services</h1>
+          <p className="text-white/80 text-center">Choose from our wide range of services</p>
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto py-12 px-4">

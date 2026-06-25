@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Search, MapPin, Package, Calendar, Clock, CreditCard, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Search, MapPin, Package, Calendar, Clock, CreditCard, CheckCircle2, AlertCircle, ArrowLeft } from 'lucide-react';
 import API from '../utils/api';
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function TrackOrder() {
+  const navigate = useNavigate();
   const [trackingId, setTrackingId] = useState('');
   const [loading, setLoading] = useState(false);
   const [orderData, setOrderData] = useState<any>(null);
@@ -122,7 +124,15 @@ export default function TrackOrder() {
       <div className="absolute bottom-[10%] right-[-5%] w-[400px] h-[400px] bg-yellow-500/5 rounded-full blur-3xl pointer-events-none z-0"></div>
 
       <div className="container mx-auto px-4 max-w-4xl animate-fade-in relative z-10">
-        
+        {/* Back Button */}
+        <button 
+          onClick={() => navigate(-1)} 
+          className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-gray-100 border border-gray-200 text-gray-700 hover:text-gray-900 transition-all duration-300 shadow-sm group hover:-translate-y-0.5 w-fit cursor-pointer font-sans"
+        >
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          <span className="text-xs font-bold uppercase tracking-wider">Back</span>
+        </button>
+
         {/* Header Section */}
         <div className="text-center mb-10 space-y-3">
           <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-[#00674F] border border-emerald-100 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-inner">

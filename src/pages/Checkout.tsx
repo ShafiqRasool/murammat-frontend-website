@@ -5,7 +5,7 @@ import { RootState } from '../store/store';
 import { loginSuccess } from '../store/authSlice';
 import API from '../utils/api';
 import toast, { Toaster } from 'react-hot-toast';
-import { Edit2, Minus, Plus, ImagePlus, X, MapPin } from 'lucide-react';
+import { Edit2, Minus, Plus, ImagePlus, X, MapPin, ArrowLeft } from 'lucide-react';
 
 const loadGoogleMapsScript = (callback: () => void) => {
   if ((window as any).google) {
@@ -443,6 +443,15 @@ export default function Checkout() {
     <div className="bg-[#FAFAFA] min-h-screen py-10 antialiased pb-28">
       <Toaster position="top-right" />
       <div className="container mx-auto px-4 lg:px-8 max-w-7xl animate-fade-in">
+        {/* Back Button */}
+        <button 
+          onClick={() => navigate(-1)} 
+          className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-gray-100 border border-gray-200 text-gray-700 hover:text-gray-900 transition-all duration-300 shadow-sm group hover:-translate-y-0.5 w-fit cursor-pointer font-sans"
+        >
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          <span className="text-xs font-bold uppercase tracking-wider">Back</span>
+        </button>
+
         <div className="flex flex-col lg:flex-row gap-8">
           
           {/* LEFT COLUMN */}

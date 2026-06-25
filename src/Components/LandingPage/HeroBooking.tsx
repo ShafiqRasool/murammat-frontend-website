@@ -134,7 +134,7 @@ const HeroBooking: React.FC = () => {
   }
 
   return (
-    <div className="w-full bg-gradient-to-br from-[#012218] via-[#003B2D] to-[#012218] text-white pt-20 pb-36 md:pb-24 px-4 sm:px-6 lg:px-8 relative antialiased overflow-hidden group">
+    <div className="w-full bg-gradient-to-br from-[#012218] via-[#003B2D] to-[#012218] text-white py-20 px-4 sm:px-6 lg:px-8 relative antialiased overflow-hidden group">
       <style>{`
         @keyframes float-blob-1 {
           0%, 100% { transform: translate3d(0px, 0px, 0) scale(1); }
@@ -217,14 +217,14 @@ const HeroBooking: React.FC = () => {
           <div className="space-y-4 w-full max-w-md pt-2">
             <div className="relative">
               <div className="flex items-center bg-white/5 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden transition-all duration-300 transform hover:-translate-y-0.5 focus-within:-translate-y-0.5 focus-within:ring-2 focus-within:ring-[#00ffc4]/50 relative z-20 shadow-lg">
-                <div className="flex items-center px-4 py-3.5 bg-white/5 border-r border-white/10 min-w-[110px]">
-                  <MapPin size={16} className="text-[#00ffc4] mr-2" />
+                <div className="flex items-center px-2.5 sm:px-4 py-3.5 bg-white/5 border-r border-white/10 min-w-[85px] sm:min-w-[110px]">
+                  <MapPin size={16} className="text-[#00ffc4] mr-1.5 sm:mr-2" />
                   <span className="text-slate-200 font-semibold text-sm">Lahore</span>
                 </div>
                 
                 <input 
                   type="text" 
-                  placeholder="What service do you need help with?" 
+                  placeholder="Search services..." 
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -232,7 +232,7 @@ const HeroBooking: React.FC = () => {
                   }}
                   onFocus={() => setShowSearchDropdown(true)}
                   onBlur={() => setTimeout(() => setShowSearchDropdown(false), 250)}
-                  className="flex-1 px-4 py-3.5 text-sm focus:outline-none text-white bg-transparent placeholder-slate-400"
+                  className="flex-1 px-2.5 sm:px-4 py-3.5 text-sm focus:outline-none text-white bg-transparent placeholder-slate-400"
                 />
                 
                 <button className="px-5 py-3.5 bg-white/5 hover:bg-[#00ffc4]/15 transition-colors border-l border-white/10 group">
@@ -412,7 +412,7 @@ const HeroBooking: React.FC = () => {
         onClick={() => {
           document.getElementById('top-services')?.scrollIntoView({ behavior: 'smooth' });
         }}
-        className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center cursor-pointer z-20 group/scroll"
+        className="hidden md:flex absolute bottom-6 left-1/2 transform -translate-x-1/2 flex-col items-center cursor-pointer z-20 group/scroll"
       >
         {/* Text Badge with glassmorphism styling */}
         <div className="mb-3.5 px-4 py-1.5 rounded-full bg-slate-950/40 backdrop-blur-md border border-white/5 group-hover/scroll:border-[#00ffc4]/30 group-hover/scroll:bg-slate-950/70 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
