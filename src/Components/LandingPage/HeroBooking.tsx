@@ -134,7 +134,7 @@ const HeroBooking: React.FC = () => {
   }
 
   return (
-    <div className="w-full bg-gradient-to-br from-[#012218] via-[#003B2D] to-[#012218] text-white py-20 px-4 sm:px-6 lg:px-8 relative antialiased overflow-hidden group">
+    <div className="w-full bg-gradient-to-br from-[#012218] via-[#003B2D] to-[#012218] text-white pt-20 pb-36 md:pb-24 px-4 sm:px-6 lg:px-8 relative antialiased overflow-hidden group">
       <style>{`
         @keyframes float-blob-1 {
           0%, 100% { transform: translate3d(0px, 0px, 0) scale(1); }
