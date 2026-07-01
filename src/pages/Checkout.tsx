@@ -355,6 +355,7 @@ export default function Checkout() {
   };
 
   const handlePlaceOrder = async () => {
+    if (submitting) return;
     if (!selectedDate || !selectedTime) {
       toast.error('Please select a date and time.');
       return;
@@ -768,6 +769,17 @@ export default function Checkout() {
                 Done
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {submitting && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex flex-col items-center justify-center animate-fade-in">
+          <div className="bg-white p-8 rounded-3xl shadow-2xl border border-gray-100 flex flex-col items-center gap-4 max-w-xs text-center">
+            {/* Elegant Spinner */}
+            <div className="w-12 h-12 border-4 border-gray-200 border-t-[#00674F] rounded-full animate-spin"></div>
+            <h3 className="text-lg font-bold text-gray-900">Placing Order...</h3>
+            <p className="text-xs text-gray-500 font-medium">Please wait while we confirm your booking. Do not close this page.</p>
           </div>
         </div>
       )}
