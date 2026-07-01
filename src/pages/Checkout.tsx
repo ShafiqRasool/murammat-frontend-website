@@ -55,6 +55,12 @@ export default function Checkout() {
   const [problemImage, setProblemImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+  // Computed values
+  const hasDiscount = service?.discounted_price && Number(service.discounted_price) > 0;
+  const activePrice = hasDiscount ? Number(service.discounted_price) : Number(service?.base_price || 1500);
+  const originalPrice = hasDiscount ? Number(service.base_price) : activePrice + 100;
+  const totalPrice = activePrice * quantity;
+
   // Address Modal States
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [cities, setCities] = useState<any[]>([]);
@@ -407,7 +413,7 @@ export default function Checkout() {
           {
             service_id: service?.id,
             quantity: quantity,
-            price: service?.base_price || 1500
+            price: activePrice
           }
         ]
       };
@@ -437,7 +443,6 @@ export default function Checkout() {
   if (loading) return <div className="p-20 text-center text-[#878787] animate-pulse">Loading Checkout...</div>;
 
   const currentMonthYear = selectedDate ? selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '';
-  const totalPrice = Number(service?.base_price || 1500) * quantity;
 
   return (
     <div className="bg-[#FAFAFA] min-h-screen py-10 antialiased pb-28">
@@ -577,8 +582,8 @@ export default function Checkout() {
                 <div className="flex-1 text-center sm:text-left">
                   <h4 className="text-[#00674F] font-bold mb-1.5 leading-snug">{service?.name}</h4>
                   <div className="text-sm font-extrabold text-gray-900 mb-3 flex items-center justify-center sm:justify-start gap-2">
-                    <span className="line-through text-gray-400 font-medium text-xs">Rs:{Number(service?.base_price) + 100}</span>
-                    <span className="text-lg">Rs:{service?.base_price}</span>
+                    <span className="line-through text-gray-400 font-medium text-xs">Rs:{originalPrice}</span>
+                    <span className="text-lg">Rs:{activePrice}</span>
                   </div>
                   <div className="flex items-center justify-center sm:justify-start gap-3">
                     <button 
@@ -606,7 +611,7 @@ export default function Checkout() {
               
               <div className="flex justify-between items-center text-sm font-medium text-gray-600 mb-3 border-b border-gray-200 pb-3">
                 <span className="truncate pr-4 flex-1">{service?.name} <span className="text-gray-400 ml-1">({quantity})</span></span>
-                <span className="whitespace-nowrap font-semibold">Rs: {service?.base_price} X {quantity}</span>
+                <span className="whitespace-nowrap font-semibold">Rs: {activePrice} X {quantity}</span>
               </div>
               
               <div className="flex justify-between items-center text-sm font-bold text-gray-800 mb-7 border-b border-gray-200 pb-5">
