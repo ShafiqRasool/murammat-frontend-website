@@ -212,6 +212,24 @@ const HeroBooking: React.FC = () => {
           <p className="text-sm md:text-base text-emerald-100/80 leading-relaxed max-w-lg">
             Murammat.pk delivers 360° value-added home maintenance. We hire, train, and deploy certified in-house experts directly to your home with post-service guarantees.
           </p>
+
+          {/* Quick Guidance Buttons on Mobile */}
+          <div className="flex flex-row gap-3 lg:hidden w-full max-w-md">
+            <button
+              onClick={() => document.getElementById('top-services')?.scrollIntoView({ behavior: 'smooth' })}
+              className="flex-1 py-3.5 px-3 bg-[#00674F] hover:bg-[#00523f] border border-[#00ffc4]/30 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
+            >
+              🛠️ Browse Services
+            </button>
+            <button
+              onClick={() => {
+                document.querySelector('form')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="flex-1 py-3.5 px-3 bg-white/10 hover:bg-white/15 border border-white/10 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
+            >
+              📞 Request a Call
+            </button>
+          </div>
           
           {/* SEARCH BAR SECTION */}
           <div className="space-y-4 w-full max-w-md pt-2">
@@ -412,7 +430,7 @@ const HeroBooking: React.FC = () => {
         onClick={() => {
           document.getElementById('top-services')?.scrollIntoView({ behavior: 'smooth' });
         }}
-        className="hidden md:flex absolute bottom-6 left-1/2 transform -translate-x-1/2 flex-col items-center cursor-pointer z-20 group/scroll"
+        className="flex absolute bottom-6 left-1/2 transform -translate-x-1/2 flex-col items-center cursor-pointer z-20 group/scroll"
       >
         {/* Text Badge with glassmorphism styling */}
         <div className="mb-3.5 px-4 py-1.5 rounded-full bg-slate-950/40 backdrop-blur-md border border-white/5 group-hover/scroll:border-[#00ffc4]/30 group-hover/scroll:bg-slate-950/70 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
