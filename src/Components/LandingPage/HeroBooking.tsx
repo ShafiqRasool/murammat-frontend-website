@@ -430,7 +430,7 @@ const HeroBooking: React.FC = () => {
         onClick={() => {
           document.getElementById('top-services')?.scrollIntoView({ behavior: 'smooth' });
         }}
-        className="flex absolute bottom-6 left-1/2 transform -translate-x-1/2 flex-col items-center cursor-pointer z-20 group/scroll"
+        className="hidden md:flex absolute bottom-6 left-1/2 transform -translate-x-1/2 flex-col items-center cursor-pointer z-20 group/scroll"
       >
         {/* Text Badge with glassmorphism styling */}
         <div className="mb-3.5 px-4 py-1.5 rounded-full bg-slate-950/40 backdrop-blur-md border border-white/5 group-hover/scroll:border-[#00ffc4]/30 group-hover/scroll:bg-slate-950/70 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
