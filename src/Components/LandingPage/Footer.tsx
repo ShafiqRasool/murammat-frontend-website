@@ -81,8 +81,6 @@ const socialLinks = [
   { id: 3, icon: <TiktokIcon size={18} />, url: 'https://www.tiktok.com/@murammat.pk' },
   { id: 4, icon: <YoutubeIcon size={18} />, url: 'https://www.youtube.com/@Murammat-admin' },
   { id: 5, icon: <PinterestIcon size={18} />, url: 'https://pin.it/7f3sbiIwW' },
-  { id: 6, icon: <TwitterIcon size={18} />, url: '#' },
-  { id: 7, icon: <LinkedinIcon size={18} />, url: '#' },
 ];
 
 // ==========================================
@@ -165,7 +163,7 @@ const Footer: React.FC = () => {
               <li className="flex items-center gap-3 group">
                 <Phone size={18} className="text-[#00674F] group-hover:scale-110 transition-transform" />
                 <a href="tel:03274540905" className="text-sm text-gray-300 hover:text-white transition-colors">
-                  0327-454-0905
+                  0327-4540905
                 </a>
               </li>
               <li className="flex items-center gap-3 group">
