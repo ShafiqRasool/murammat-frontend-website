@@ -70,7 +70,7 @@ const ServicesCards: React.FC<ServicesCardsProps> = ({ services }) => {
                 <div className="flex items-center gap-1 mb-4 text-[#00674F]">
                   <Star className="w-4 h-4 fill-current" />
                   <span className="font-semibold">{rating}</span>
-                  <span className="text-gray-400 text-sm ml-1">(120+ reviews)</span>
+                  {/* <span className="text-gray-400 text-sm ml-1">(120+ reviews)</span> */}
                 </div>
                 
                 <p className="text-gray-600 text-sm mb-6 line-clamp-2 flex-grow">
