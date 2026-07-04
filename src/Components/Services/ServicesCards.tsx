@@ -103,6 +103,33 @@ const ServicesCards: React.FC<ServicesCardsProps> = ({ services }) => {
             </div>
           );
         })}
+
+        {/* Coming Soon Card */}
+        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl shadow-lg border border-white/5 p-6 flex flex-col justify-between text-center relative overflow-hidden group min-h-[350px]">
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#00674F] to-[#00a87a]"></div>
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#00674F]/10 rounded-full blur-2xl pointer-events-none group-hover:bg-[#00a87a]/20 transition-all duration-500"></div>
+          
+          <div className="my-auto space-y-4">
+            <div className="w-16 h-16 bg-[#00674F]/20 rounded-full flex items-center justify-center mx-auto text-[#00ffc4] group-hover:scale-110 transition-transform duration-300">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="28" height="28">
+                <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+              </svg>
+            </div>
+            
+            <h3 className="text-xl font-bold text-white tracking-tight">More Services Coming Soon!</h3>
+            <p className="text-slate-400 text-sm leading-relaxed max-w-xs mx-auto">
+              We are constantly adding new professional services to our catalog. Need something custom? Let us know!
+            </p>
+          </div>
+          
+          <button 
+            onClick={() => navigate('/')} 
+            className="mt-6 w-full py-3 bg-gradient-to-r from-[#00674F] to-[#00a87a] text-white font-bold rounded-xl shadow-lg shadow-[#00674F]/20 hover:shadow-xl hover:shadow-[#00a87a]/30 transition-all active:scale-[0.98] cursor-pointer"
+          >
+            Request a Callback
+          </button>
+        </div>
+
       </div>
     </div>
   );
