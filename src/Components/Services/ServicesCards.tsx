@@ -64,7 +64,7 @@ const ServicesCards: React.FC<ServicesCardsProps> = ({ services }) => {
               
               <div className="p-6 flex flex-col flex-grow">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-bold text-gray-900 line-clamp-1">{service.name}</h3>
+                  <h3 className="text-xl font-bold text-gray-900 break-words">{service.name}</h3>
                 </div>
                 
                 <div className="flex items-center gap-1 mb-4 text-[#00674F]">
