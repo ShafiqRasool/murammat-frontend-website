@@ -22,6 +22,7 @@ const CategoryServices: React.FC = () => {
   
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
   const [services, setServices] = useState<Service[]>([]);
+  const [parentCategoryName, setParentCategoryName] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,9 +34,14 @@ const CategoryServices: React.FC = () => {
         const relatedSubCats = catRes.data.filter((c: SubCategory) => c.parent_category_id === id);
         setSubCategories(relatedSubCats);
 
+        // Fetch parent categories to get current parent category name
+        const parentRes = await API.get('/public/parent-categories');
+        const parentCat = parentRes.data.find((pc: any) => pc.id === id);
+        if (parentCat) {
+          setParentCategoryName(parentCat.name);
+        }
+
         // Fetch all services and filter by parent_category_id
-        // We can pass ?parent_category_id=id but public/services might not support it yet.
-        // Let's just fetch all and filter in frontend for now to be safe.
         const srvRes = await API.get('/public/services');
         const relatedServices = srvRes.data.filter((s: any) => s.parent_category_id === id);
         setServices(relatedServices);
@@ -75,7 +81,23 @@ const CategoryServices: React.FC = () => {
             <div className="w-10 h-10 border-4 border-[#00674F] border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : subCategories.length === 0 ? (
-          <div className="text-center text-gray-500 py-20">No categories found for this selection.</div>
+          <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+            <div className="w-20 h-20 bg-[#E6F0ED] rounded-full flex items-center justify-center text-[#00674F] animate-pulse">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="36" height="36">
+                <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800">More {parentCategoryName || 'Services'} Coming Soon!</h2>
+            <p className="text-gray-500 max-w-sm leading-relaxed">
+              We are currently expanding our catalogue. More {parentCategoryName || 'services'} are under way!
+            </p>
+            <button 
+              onClick={() => navigate('/')} 
+              className="mt-4 px-8 py-3 bg-gradient-to-r from-[#00674F] to-[#00a87a] text-white font-bold rounded-xl shadow-lg shadow-[#00674F]/20 hover:shadow-xl hover:shadow-[#00a87a]/30 transition-all active:scale-[0.98] cursor-pointer"
+            >
+              Request a Callback
+            </button>
+          </div>
         ) : (
           <div className="flex flex-wrap justify-center gap-8">
             {subCategories.map((cat) => (
@@ -93,6 +115,21 @@ const CategoryServices: React.FC = () => {
                 </h3>
               </div>
             ))}
+            
+            {/* Custom Coming Soon Card alongside Subcategories */}
+            <div 
+              onClick={() => navigate('/')}
+              className="flex flex-col items-center cursor-pointer group"
+            >
+              <div className="w-20 h-20 bg-slate-50 rounded-2xl flex items-center justify-center mb-3 shadow-sm border border-dashed border-slate-300 transition-transform duration-300 group-hover:-translate-y-2 group-hover:shadow-md">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width="28" height="28" className="text-slate-400">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                </svg>
+              </div>
+              <h3 className="text-xs font-semibold text-slate-400 text-center max-w-[120px] leading-tight group-hover:text-[#00674F]">
+                More {parentCategoryName || 'Services'} Coming Soon
+              </h3>
+            </div>
           </div>
         )}
       </div>
