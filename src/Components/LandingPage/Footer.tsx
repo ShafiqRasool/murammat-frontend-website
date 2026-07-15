@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   Phone,
   Mail,
@@ -199,9 +200,11 @@ const Footer: React.FC = () => {
 
             {/* Legal Links */}
             <div className="flex items-center gap-4 text-xs text-gray-400">
-              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+              <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
               <span>|</span>
-              <a href="#" className="hover:text-white transition-colors">Terms of Use</a>
+              <Link to="/terms-conditions" className="hover:text-white transition-colors">Terms of Use</Link>
+              <span>|</span>
+              <Link to="/partner-privacy-policy" className="hover:text-white transition-colors">Partner Privacy Policy</Link>
             </div>
           </div>
 

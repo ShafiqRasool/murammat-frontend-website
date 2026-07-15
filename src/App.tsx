@@ -17,6 +17,7 @@ import Blogs from './pages/Blogs';
 import BlogDetails from './pages/BlogDetails';
 import TrackOrder from './pages/TrackOrder';
 import Contact from './pages/Contact';
+import StaticPage from './pages/StaticPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -50,6 +51,9 @@ function App() {
           <Route path="/blog/:id" element={<BlogDetails />} />
           <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy-policy" element={<StaticPage id="privacy-policy" />} />
+          <Route path="/terms-conditions" element={<StaticPage id="terms-conditions" />} />
+          <Route path="/partner-privacy-policy" element={<StaticPage id="partner-app-privacy-policy" />} />
         </Routes>
       </div>
       <Footer />

@@ -19,7 +19,7 @@ const SpecificCategories = () => {
     <div>
       {/* Pass the dynamic heading into the Hero component */}
       <Hero heading={dynamicHeading} parentId={parentId} />
-      <CategoryServicesGrid parentId={parentId} />  
+      <CategoryServicesGrid parentId={parentId} parentCategoryName={dynamicHeading} />  
       <AppDownload />
       <TestimonialSliders />   
       <Complaints /> 
