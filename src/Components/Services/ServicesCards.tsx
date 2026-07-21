@@ -73,15 +73,15 @@ const ServicesCards: React.FC<ServicesCardsProps> = ({ services }) => {
                   {service.small_description || service.description || "Professional service tailored to your needs."}
                 </p>
 
-                <div className="flex items-end justify-between mt-auto">
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mt-auto">
                   <div>
                     <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Starting from</p>
                     <div className="flex items-center gap-2">
-                      <span className="text-2xl font-bold text-[#00674F]">
+                      <span className="text-2xl font-bold text-[#00674F] whitespace-nowrap">
                         PKR {Number(service.discounted_price || service.base_price).toLocaleString()}
                       </span>
                       {service.discounted_price && (
-                        <span className="text-sm text-gray-400 line-through">
+                        <span className="text-sm text-gray-400 line-through whitespace-nowrap">
                           {Number(service.base_price).toLocaleString()}
                         </span>
                       )}
@@ -90,7 +90,7 @@ const ServicesCards: React.FC<ServicesCardsProps> = ({ services }) => {
 
                   <button
                     onClick={() => navigate(`/services/${service.id}`)}
-                    className="bg-[#00674F] hover:bg-[#00523e] text-white px-6 py-2.5 rounded-xl font-semibold transition-colors duration-200"
+                    className="bg-[#00674F] hover:bg-[#00523e] text-white px-6 py-2.5 rounded-xl font-semibold transition-colors duration-200 w-full sm:w-auto text-center"
                   >
                     Book Now
                   </button>
