@@ -157,6 +157,15 @@ export default function ServiceDetails() {
                   {service.description || service.small_description || "Get the best professional services tailored to your needs. Highly rated and reliable."}
                 </p>
 
+                {/* Action Button: Place Order */}
+                <button 
+                  onClick={() => navigate(`/checkout/${service.id}`)}
+                  className="w-full py-4 bg-gradient-to-r from-[#00674F] to-[#009b77] hover:from-[#00523f] hover:to-[#00aa82] text-white text-sm font-bold rounded-xl shadow-lg shadow-emerald-700/20 hover:shadow-xl hover:shadow-emerald-700/35 hover:-translate-y-0.5 active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
+                >
+                  <ShoppingBag size={18} className="group-hover:scale-110 transition-transform" />
+                  <span>BOOK & PLACE ORDER</span>
+                </button>
+
                 {/* Included / Not Included Lists Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                   {/* Included Card */}
@@ -200,15 +209,6 @@ export default function ServiceDetails() {
                   </div>
                 </div>
               </div>
-
-              {/* Action Button: Place Order */}
-              <button 
-                onClick={() => navigate(`/checkout/${service.id}`)}
-                className="w-full py-4 bg-gradient-to-r from-[#00674F] to-[#009b77] hover:from-[#00523f] hover:to-[#00aa82] text-white text-sm font-bold rounded-xl shadow-lg shadow-emerald-700/20 hover:shadow-xl hover:shadow-emerald-700/35 hover:-translate-y-0.5 active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
-              >
-                <ShoppingBag size={18} className="group-hover:scale-110 transition-transform" />
-                <span>BOOK & PLACE ORDER</span>
-              </button>
             </div>
           </div>
         ) : (

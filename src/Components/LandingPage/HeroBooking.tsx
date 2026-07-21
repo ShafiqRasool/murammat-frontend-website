@@ -52,6 +52,10 @@ const HeroBooking: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showSearchDropdown, setShowSearchDropdown] = useState<boolean>(false);
 
+  // Form Service Search States
+  const [formServiceSearch, setFormServiceSearch] = useState<string>('');
+  const [showFormServiceDropdown, setShowFormServiceDropdown] = useState<boolean>(false);
+
   // Area Search States
   const [areaSearch, setAreaSearch] = useState<string>('');
   const [showAreaDropdown, setShowAreaDropdown] = useState<boolean>(false);
@@ -59,6 +63,10 @@ const HeroBooking: React.FC = () => {
   // dynamically filters the list based on user typing
   const filteredServices = adminServices.filter(service =>
     service.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredFormServices = adminServices.filter(service =>
+    service.name.toLowerCase().includes(formServiceSearch.toLowerCase())
   );
 
   const filteredAreas = lahoreAreas.filter(area =>
@@ -110,6 +118,7 @@ const HeroBooking: React.FC = () => {
     } else {
       setSearchQuery(serviceName);
       setFormData(prev => ({ ...prev, service: serviceName }));
+      setFormServiceSearch(serviceName);
       setShowSearchDropdown(false);
     }
   };
@@ -132,7 +141,7 @@ const HeroBooking: React.FC = () => {
           Your request for <span className="font-semibold text-white">{formData.service || 'our services'}</span> has been received. Our team will call you at <span className="font-semibold text-white">{formData.phone}</span> shortly.
         </p>
         <button 
-          onClick={() => { setShowSuccess(false); setFormData({name:'', phone:'', service:'', area:'', address:''}); setSearchQuery(''); setAreaSearch(''); }}
+          onClick={() => { setShowSuccess(false); setFormData({name:'', phone:'', service:'', area:'', address:''}); setSearchQuery(''); setAreaSearch(''); setFormServiceSearch(''); }}
           className="mt-6 px-6 py-2.5 bg-gradient-to-r from-[#00674F] to-[#009b77] text-white font-bold rounded-lg hover:from-[#00523f] hover:to-[#00aa82] transition-all shadow-md active:scale-95"
         >
           Book Another Service
@@ -375,18 +384,54 @@ const HeroBooking: React.FC = () => {
               </div>
 
               <div className="relative">
-                <select 
-                  required 
-                  name="service" 
-                  value={formData.service} 
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3.5 text-sm rounded-lg border border-white/10 bg-slate-900 text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#00ffc4] focus:border-transparent transition-all appearance-none cursor-pointer shadow-inner"
-                >
-                  <option value="" disabled className="bg-slate-900 text-slate-500">Select Service</option>
-                  {adminServices.map((service, idx) => (
-                    <option key={idx} value={service.name} className="bg-slate-900 text-slate-200">{service.name}</option>
-                  ))}
-                </select>
+                <input 
+                  required
+                  type="text"
+                  placeholder="Select Service"
+                  value={formServiceSearch}
+                  onFocus={() => setShowFormServiceDropdown(true)}
+                  onChange={(e) => {
+                    setFormServiceSearch(e.target.value);
+                    setFormData(prev => ({ ...prev, service: '' }));
+                    setShowFormServiceDropdown(true);
+                  }}
+                  onBlur={() => {
+                    setTimeout(() => {
+                      setShowFormServiceDropdown(false);
+                      if (!formData.service) {
+                        setFormServiceSearch(formData.service);
+                      }
+                    }, 200);
+                  }}
+                  className="w-full px-4 py-3.5 text-sm rounded-lg border border-white/10 bg-slate-900 text-white placeholder-emerald-100/30 focus:outline-none focus:ring-2 focus:ring-[#00ffc4] focus:border-transparent transition-all shadow-inner" 
+                />
+                
+                {showFormServiceDropdown && (
+                  <div className="absolute top-full left-0 w-full mt-1 bg-slate-900 border border-white/10 rounded-lg shadow-2xl overflow-hidden z-50 animate-fade-in max-h-48 overflow-y-auto">
+                    {filteredFormServices.length > 0 ? (
+                      <ul className="py-1">
+                        {filteredFormServices.map((service, idx) => (
+                          <li 
+                            key={idx}
+                            onMouseDown={() => {
+                              setFormData(prev => ({ ...prev, service: service.name }));
+                              setFormServiceSearch(service.name);
+                              setShowFormServiceDropdown(false);
+                            }}
+                            className="px-4 py-2 hover:bg-[#00674F]/20 cursor-pointer text-sm text-slate-200 transition-colors"
+                          >
+                            {service.name}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="px-4 py-3 text-xs text-slate-500 text-center">
+                        No services found
+                      </div>
+                    )}
+                  </div>
+                )}
+                
                 <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400">
                   <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                 </div>
