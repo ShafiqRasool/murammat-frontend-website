@@ -55,11 +55,7 @@ const ServicesCards: React.FC<ServicesCardsProps> = ({ services }) => {
                   alt={service.name}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                {service.discounted_price && (
-                  <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-md">
-                    Sale
-                  </div>
-                )}
+                {/* Sale tag removed */}
               </div>
 
               <div className="p-6 flex flex-col flex-grow">
